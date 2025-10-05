@@ -1,0 +1,170 @@
+openapi: 3.1.0
+info:
+  title: Drink & Recipe Tracking (Pseudo API)
+  version: 0.1.0
+  description: >-
+    Contract abstraction for potential future backend. Current implementation
+    uses direct Firestore access; this spec informs contract tests & future evolution.
+servers:
+  - url: https://future-backend.example.com
+paths:
+  /drinks:
+    get:
+      summary: List all drinks alphabetically
+      operationId: listDrinks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  drinks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Drink'
+    post:
+      summary: Create a new drink
+      operationId: createDrink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDrink'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Drink'
+        '409':
+          description: Duplicate slug or name
+  /drinks/{drinkSlug}:
+    get:
+      summary: Get single drink (metadata + recipes summary)
+      operationId: getDrink
+      parameters:
+        - name: drinkSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrinkDetail'
+        '404':
+          description: Not found
+  /drinks/{drinkSlug}/recipes:
+    get:
+      summary: List recipes for a drink (newest first)
+      operationId: listRecipes
+      parameters:
+        - name: drinkSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
+    post:
+      summary: Create a recipe under a drink
+      operationId: createRecipe
+      parameters:
+        - name: drinkSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipe'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '409':
+          description: Duplicate recipe slug
+components:
+  schemas:
+    Ingredient:
+      type: object
+      required: [name, amount]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        amount:
+          type: string
+          maxLength: 255
+        unit:
+          type: string
+          maxLength: 50
+    Recipe:
+      type: object
+      required: [name, slug, instructions, ingredients, createdAt]
+      properties:
+        name: { type: string, maxLength: 255 }
+        slug: { type: string, maxLength: 255 }
+        instructions: { type: string }
+        ingredients:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Ingredient' }
+        inspirationUrl: { type: string, format: uri }
+        createdAt: { type: string, format: date-time }
+    Drink:
+      type: object
+      required: [name, slug, createdAt]
+      properties:
+        name: { type: string, maxLength: 255 }
+        slug: { type: string, maxLength: 255 }
+        createdAt: { type: string, format: date-time }
+    DrinkDetail:
+      allOf:
+        - $ref: '#/components/schemas/Drink'
+        - type: object
+          properties:
+            recipes:
+              type: array
+              items: { $ref: '#/components/schemas/Recipe' }
+    CreateDrink:
+      type: object
+      required: [name, slug]
+      properties:
+        name: { type: string, maxLength: 255 }
+        slug: { type: string, maxLength: 255 }
+    CreateRecipe:
+      type: object
+      required: [name, slug, instructions, ingredients]
+      properties:
+        name: { type: string, maxLength: 255 }
+        slug: { type: string, maxLength: 255 }
+        instructions: { type: string }
+        ingredients:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Ingredient' }
+        inspirationUrl: { type: string, format: uri }
