@@ -13,7 +13,7 @@
     "typescript",
     "typescriptreact"
   ],
-  "eslint.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
