@@ -66,6 +66,10 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 6. **Given** the system has no drinks stored, **When** the user first lands on the application, **Then** an empty-state message is shown and an input to add a new drink is available.
 7. **Given** the user attempts to add a drink whose name or generated/edited slug collides case-insensitively with an existing drink's name or slug, **When** they submit, **Then** the system prevents duplicate creation and informs the user.
 8. **Given** the user is offline and attempts to add a new drink or recipe, **When** they submit, **Then** the new item appears locally and is automatically synchronized using the platform's default behavior once connectivity returns (no custom merge logic).
+9. **Given** the user begins adding a recipe and enters a recipe name, **When** a slug is first needed (field focus or form submission), **Then** a recipe slug is auto-generated from the recipe name using drink slug normalization rules and may be manually edited before creation.
+10. **Given** an existing recipe for a drink, **When** the user attempts to submit another recipe whose slug (after normalization) matches that existing recipe's slug (case-insensitive) for the same drink, **Then** the system rejects the submission with duplicate feedback.
+11. **Given** the user adds a recipe with ingredients listed (each ingredient entry containing name and amount, optional unit), **When** they submit, **Then** the ingredients appear under that recipe in the order entered.
+12. **Given** the user includes an optional inspiration URL, **When** the recipe is saved, **Then** the URL is stored and displayed as a link with default user agent styling.
 
 ### Edge Cases
 - Adding a drink with leading/trailing whitespace in the name → should trim before uniqueness evaluation.
@@ -75,6 +79,9 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 - Offline first load with no prior cached data → show empty state gracefully.
 - Rapid consecutive submissions (double-click) → system should avoid duplicate entries.
 - Recipe created concurrently on multiple devices → last write wins per default backing store behavior; duplicates may appear if distinct IDs are created.
+ - Recipe submitted with empty ingredients list → rejected (must include at least one ingredient entry).
+ - Ingredient item missing amount or name → rejected with feedback.
+ - Instructions extremely long → may impact performance [NEEDS CLARIFICATION: maximum instructions length].
 
 ## Requirements *(mandatory)*
 
@@ -87,7 +94,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-004**: The system MUST display all stored drinks on the initial view sorted in ascending alphabetical order (case-insensitive) by drink name.
 - **FR-005**: The system MUST prevent creation of duplicate drinks where either (a) names match case-insensitively after trimming OR (b) slugs match exactly case-insensitively.
 - **FR-006**: The system MUST allow users to select a drink to view its details including its list of associated recipes.
-- **FR-007**: The system MUST allow users to add a new recipe to a selected drink with required recipe fields (at minimum a recipe title/name) [NEEDS CLARIFICATION: required recipe fields beyond name? ingredients? instructions?].
+- **FR-007**: The system MUST allow users to add a new recipe to a selected drink with required fields: recipe name, recipe slug, instructions (markdown-capable plain text), at least one ingredient (name + amount; unit optional), optional inspiration URL.
 - **FR-008**: The system MUST immediately show a newly added drink or recipe in the current session without full page reload.
 - **FR-009**: The system MUST store drinks and recipes such that they remain available for browsing when the device is offline (previously synchronized data accessible offline).
 - **FR-010**: The system MUST queue user-added drinks and recipes performed while offline for later synchronization when connectivity resumes, relying solely on the default data store offline/backfill mechanism (no custom conflict UI; last write wins for field-level conflicts).
@@ -108,29 +115,20 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-025**: The system MUST ensure auto-generated slugs are derived from the name then truncated so that the slug does not exceed 255 characters; user-edited slugs exceeding 255 characters are rejected.
 - **FR-026**: The system MUST apply a deterministic slug normalization: lowercase, remove characters outside [a-z0-9-], convert whitespace and disallowed runs to single hyphens, collapse multiple hyphens, trim leading/trailing hyphens.
 - **FR-027**: The system MUST treat name and slug uniqueness checks after normalization and trimming.
-- **FR-004**: The system MUST allow users to select a drink to view its details including its list of associated recipes.
-- **FR-005**: The system MUST allow users to add a new recipe to a selected drink with required recipe fields (at minimum a recipe title/name) [NEEDS CLARIFICATION: required recipe fields beyond name? ingredients? instructions?].
-- **FR-006**: The system MUST immediately show a newly added drink or recipe in the current session without full page reload.
-- **FR-007**: The system MUST store drinks and recipes such that they remain available for browsing when the device is offline (previously synchronized data accessible offline).
-- **FR-008**: The system MUST queue user-added drinks and recipes performed while offline for later synchronization when connectivity resumes [NEEDS CLARIFICATION: conflict resolution strategy].
-- **FR-009**: The system MUST not provide any functionality to edit existing drinks or recipes.
-- **FR-010**: The system MUST not provide any functionality to delete drinks or recipes.
-- **FR-011**: The system MUST present semantic HTML structure (e.g., lists for collections, headings for sections) [NEEDS CLARIFICATION: accessibility standards to meet (e.g., WCAG level)?].
-- **FR-012**: The system MUST rely solely on default user agent styling (no custom visual styling) aside from minimal layout necessary for clarity [NEEDS CLARIFICATION: allowance for basic spacing?].
-- **FR-013**: The system SHOULD provide an empty state indicator when no drinks exist.
-- **FR-014**: The system SHOULD maintain the order of recipes for a drink in order of creation unless another ordering is specified [NEEDS CLARIFICATION: desired recipe ordering? alphabetical vs creation time].
-- **FR-015**: The system SHOULD handle rapid duplicate submissions gracefully (no duplicate persisted records).
-- **FR-016**: The system MUST ensure that user inputs are trimmed of leading/trailing whitespace before storage.
-- **FR-017**: The system MUST persist all user-created data durably so that closing and reopening the app (after successful sync) retains the data set.
-- **FR-018**: The system SHOULD provide basic feedback upon successful creation (e.g., item appears in list) and upon rejection (duplicate / invalid input) [NEEDS CLARIFICATION: explicit error messaging requirements].
-- **FR-019**: The system MUST allow navigation back from a drink detail view to the drinks list.
-- **FR-020**: The system MUST ensure that offline access includes previously viewed drink details and their recipes, if they were loaded during an earlier online session.
+- **FR-028**: The system MUST auto-generate a default recipe slug from the recipe name using the same normalization & truncation rules as drink slugs.
+- **FR-029**: The system MUST allow manual edit of the recipe slug prior to recipe creation; recipe slug becomes immutable after creation.
+- **FR-030**: The system MUST enforce recipe slug uniqueness within the scope of its parent drink (case-insensitive after normalization).
+- **FR-031**: The system MUST store recipe instructions as plain text that may include simple markdown syntax (e.g., headings, emphasis, unordered/ordered lists) rendered with default user agent styles.
+- **FR-032**: The system MUST accept and store an optional inspiration URL for a recipe; if provided it is displayed as a clickable link.
+- **FR-033**: The system MUST require at least one ingredient entry per recipe; each ingredient MUST include a name (≤255 chars) and amount (≤255 chars) and MAY include a unit (≤50 chars).
+- **FR-034**: The system MUST display ingredients for a recipe in the order entered.
+- **FR-035**: The system MUST ensure recipe data (including instructions and ingredients) is available offline once created or previously synced.
 
-Ambiguity & Assumption Markers remain only for recipe required field set, accessibility level, spacing allowance, recipe ordering preference, and error messaging detail. Sync & conflict handling and max name length are now resolved.
+Ambiguity & Assumption Markers remain only for: accessibility level target, spacing allowance under "no styling", potential alternative recipe ordering preference (currently insertion order), explicit error messaging wording, maximum instructions length. Sync & conflict handling, recipe field set, and timestamp visibility are resolved.
 
 ### Key Entities *(include if feature involves data)*
-- **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp [NEEDS CLARIFICATION: is timestamp user-visible?], list of associated recipes (derived relation).
-- **Recipe**: Represents a specific formulation/instructions for preparing a given drink. Attributes: recipe name/title (≤255 chars), (optional) ingredients list [NEEDS CLARIFICATION: include? structure?], (optional) preparation steps text, creation timestamp, parent drink reference.
+- **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp (internal only; not user visible), list of associated recipes (derived relation).
+- **Recipe**: Represents a specific formulation/instructions for preparing a given drink. Attributes: name/title (≤255 chars, required), slug (≤255 chars, unique within parent drink, required, user-adjustable before creation), instructions (markdown-capable plain text, required), ingredients (list of ≥1 items each with name, amount, optional unit), optional inspiration URL, created timestamp (internal only; not user visible), parent drink reference.
 
 Removed Potential Additional entity; offline queue is implicit in underlying data store and has no direct user-visible representation per clarified scope.
 
