@@ -2,7 +2,8 @@
 # Implementation Plan: Drink & Recipe Tracking (Offline PWA)
 
 **Branch**: `001-a-pwa-to` | **Date**: 2025-10-05 | **Spec**: `specs/001-a-pwa-to/spec.md`
-**Input**: Feature specification from `/specs/001-a-pwa-to/spec.md`
+**Input**: Feature specification from `specs/001-a-pwa-to/spec.md`
+**Additional User Inputs**: use TanStack Router (file-based routing) + loaders, use React Compiler, Prettier formatting, ESLint (minimal + react-hooks), '@/' path alias with Vite tsconfig paths plugin.
 
 ## Execution Flow (/plan command scope)
 ```
@@ -31,37 +32,48 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Lightweight offline-capable single-page web application for tracking Drinks (beverage concepts) and their multiple Recipes (preparation variants). Users can: (1) view alphabetically sorted drinks, (2) create new drinks with normalized unique slugs, (3) navigate to a drink detail view listing its recipes (newest first), and (4) create new recipes (with ingredients and optional inspiration URL). No edit or delete operations exist. Offline-first behavior relies on Firestore's local persistence; queued creations sync automatically when connectivity returns. Technical approach: React 19.2 + TypeScript + Vite, TanStack Query for remote/cache orchestration (abstracting Firestore interactions), Zod for boundary validation, semantic HTML only (no custom styling) and a minimal service worker + manifest for PWA installability/offline shell.
+Offline-capable React (19.2) + TypeScript PWA to create and browse Drinks and associated Recipes (newest first). No editing or deletion. Offline persistence via Firestore local cache; semantic HTML only. Routing provided by TanStack Router with file-based route definitions, using route loaders to prefetch TanStack Query caches so components can rely on `useSuspenseQuery` without waterfalls. React Compiler (experimental) enabled to optimize render paths. Tooling includes ESLint (recommended + react-hooks), Prettier, strict TS config, Zod for runtime validation, and a '@/' import alias for cleaner module paths.
 
 ## Technical Context
-**Language/Version**: TypeScript 5.x (strict) / React 19.2
-**Primary Dependencies**: React 19.2, TanStack Query, Zod, Vite, Firestore Web SDK
-**Storage**: Cloud Firestore (with built‑in offline persistence + last-write-wins conflict resolution)
-**Testing**: Vitest + @testing-library/react (unit/integration as needed), Contract test stubs only initially
-**Target Platform**: Modern evergreen desktop & mobile browsers (Chromium, Firefox, Safari)
-**Project Type**: Single web application (frontend only – no custom backend)
-**Performance Goals**: First interactive < 2s on mid‑range device; initial JS < 150KB (gzipped); navigation & create actions visible update < 150ms; offline shell available on 1st visit after assets cached
-**Constraints**: Offline-capable PWA, semantic-only markup, no custom styling beyond UA defaults, no global state libs, no edit/delete scope
-**Scale/Scope**: Personal / hobby scale (< 5K drinks, < 50 recipes per drink) – fits comfortably in Firestore free tier and local persistence
+**Language/Version**: TypeScript 5.x (strict) / React 19.2 + React Compiler (experimental)  
+**Primary Dependencies**: React 19.2, TanStack Query, TanStack Router, Zod, Vite, Firestore Web SDK  
+**Storage**: Cloud Firestore (offline persistence, last-write-wins)  
+**Testing**: Vitest + @testing-library/react + contract placeholders; targeted logic/unit tests only  
+**Target Platform**: Modern evergreen browsers (desktop + mobile)  
+**Project Type**: Single web application (frontend only)  
+**Performance Goals**: FCP < 1.5s / interactive < 2s mid-range; bundle < 150KB gzip; route transition data ready via loader-prefetch (no spinner flash); create action optimistic UI < 150ms  
+**Constraints**: Offline-first PWA, semantic-only markup, no custom CSS, no edit/delete, no global state libs, minimal configuration overhead  
+**Scale/Scope**: Personal scale (<5K drinks; each <50 recipes) well within Firestore & client memory  
+**Formatting & Linting**: Prettier (opinionated defaults) + ESLint (eslint:recommended, @typescript-eslint/recommended, plugin:react-hooks/recommended) integrated; Prettier last-in pipeline  
+**Path Aliases**: '@/' root src alias via tsconfig paths + vite-tsconfig-paths plugin  
+**Routing Strategy**: TanStack Router file-based with route loaders prefetching query data (drinks list, drink detail + recipes) to hydrate cache for Suspense boundaries  
+**Data Prefetch**: Route loaders call query option factories then prime TanStack Query cache (avoids double-fetch)  
+**Build Optimizations**: React Compiler enable flag, tree-shake Firestore modular SDK imports  
+**Error Handling**: Error Boundaries per route layout, native browser validation messages for forms  
+**Security/Privacy**: Single-user assumption (no auth); no PII storage  
+**Open Questions**: None (all clarifications resolved)
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 | Principle / Constraint | Compliance Strategy | Notes |
 |------------------------|---------------------|-------|
-| React 19.2 & modern APIs | Use createRoot, functional components, Suspense boundaries for async drink/recipe loads | No legacy class components |
-| Simplicity & Composition | Flat feature components: `DrinkList`, `CreateDrinkForm`, `DrinkDetail`, `CreateRecipeForm` | Avoid over-abstraction until duplication appears |
-| TanStack Query for data | Query options factories: `drinkListQueryOpts()`, `drinkDetailQueryOpts(slug)` | Firestore SDK wrapped in lightweight data access layer |
-| Suspense + Error Boundaries | Wrap list & detail regions with `<Suspense fallback>` + error boundary | Ensures resilient offline/online transitions |
-| Semantic Markup | Use `<main>`, `<section>`, `<article>`, `<ul>/<li>`, `<form>`, `<fieldset>`, `<legend>` | No div soup, no ARIA unless needed |
-| Minimal Testing Requirement | Only complex logic (slug normalization, dedupe) + future contract/integration tests | Keeps velocity high |
-| Explicit Loading/Error States | Suspense fallback text + error boundary message; offline detection messaging optional | Follows principle 7 |
-| No Unnecessary Global State | Local component state + TanStack Query caches; no Redux/Zustand | Simplicity maintained |
-| Type Safety + Zod | Zod schemas for Drink, Recipe, Ingredient at Firestore boundary, transform to internal types | No `any` / non-null assertions |
-| No styling beyond UA | Zero custom CSS; rely on semantic grouping and line breaks | Clarification accepted |
+| React 19.2 & modern APIs | Functional components, Suspense boundaries, React Compiler enabled | Compiler is additive; fall back if instability |
+| Simplicity & Composition | Small focused components; avoid abstraction until duplication | Only slug util & query option factories upfront |
+| TanStack Query | All data via query options factories; loaders pre-populate cache | No custom global store |
+| Routing (extension) | TanStack Router file-based routes with loaders | Aligns with query prefetch requirement |
+| Suspense & Error Boundaries | Boundary per route tree segment (root + detail) | Shared fallback components |
+| Semantic Markup | Use appropriate landmark & structural elements | No non-semantic wrappers |
+| Minimal Testing | Only complex logic & route/contract integration tests | Honors constitution principle 6 |
+| Explicit Loading/Error States | Loader-prefetch minimizes loading; fallback still present | Avoid spinner-only states >3s |
+| No Global State Libs | Query cache + component state only | Document if future need arises |
+| Type Safety + Zod | Zod schemas at Firestore boundary + validated types inside | No `any` or non-null assertions |
+| No Styling Beyond UA | Zero CSS; structural grouping only | Prettier handles formatting only |
+| Build & Lint Discipline | ESLint + react-hooks + Prettier; path aliases to reduce relative imports | Keeps code clarity |
 
-Initial review: PASS – no violations requiring Complexity Tracking.
+Initial Constitution Check: PASS. No deviations requiring Complexity Tracking.
 
+directories captured above]
 ## Project Structure
 
 ### Documentation (this feature)
@@ -72,41 +84,54 @@ specs/001-a-pwa-to/
 ├── data-model.md
 ├── quickstart.md
 ├── contracts/
-└── (future) tasks.md
+└── tasks.md (generated in Phase 2)
 ```
 
 ### Source Code (planned)
 ```
 app/
 ├── src/
+│   ├── routes/                      # File-based TanStack Router route modules
+│   │   ├── __root.tsx               # Root route: provides QueryClientProvider, RouterProvider, ErrorBoundary, Suspense
+│   │   ├── index.route.tsx          # '/' drinks list route (loader prefetch drinks)
+│   │   └── drinks.$drinkSlug.route.tsx # '/drinks/:drinkSlug' recipe detail route (loader prefetch drink + recipes)
 │   ├── components/
 │   │   ├── DrinkList.tsx
 │   │   ├── DrinkDetail.tsx
 │   │   ├── CreateDrinkForm.tsx
 │   │   ├── CreateRecipeForm.tsx
-│   │   └── common/ (ErrorBoundary, SuspenseFallback)
+│   │   └── common/
+│   │       ├── ErrorBoundary.tsx
+│   │       └── SuspenseFallback.tsx
 │   ├── data/
-│   │   ├── firestore.ts (init + converters)
-│   │   ├── queries.ts (TanStack Query option factories)
-│   │   └── slug.ts (normalization util + tests)
-│   ├── schemas/ (zod definitions)
-│   ├── pages/
-│   │   ├── DrinksPage.tsx
-│   │   └── DrinkDetailPage.tsx
-│   ├── router/ (simple client router or hash routing)
-│   ├── service-worker.ts
-│   └── main.tsx
+│   │   ├── firestore.ts             # Firestore init + persistence
+│   │   ├── queries.ts               # query option factories
+│   │   ├── loaders.ts               # route loader helper utilities
+│   │   └── slug.ts                  # slug normalization + tests
+│   ├── schemas/                     # Zod schemas
+│   │   ├── drink.ts
+│   │   ├── recipe.ts
+│   │   └── ingredient.ts
+│   ├── sw/                          # service worker & registration
+│   │   ├── service-worker.ts
+│   │   └── register-sw.ts
+│   ├── index.html (via Vite public) # entry template (actually in public/)
+│   ├── main.tsx                     # bootstrap React + Router
+│   └── env.d.ts
 ├── public/
 │   ├── index.html
 │   ├── manifest.webmanifest
 │   └── icons/
+├── tsconfig.json
+├── vite.config.ts
 └── tests/
-      ├── contract/
       ├── unit/
+      │   └── slug.test.ts
+      ├── contract/
       └── integration/
 ```
 
-**Structure Decision**: Single web app (`app/`) — no backend service needed because Firestore direct client usage satisfies persistence + offline. Directory focuses on clear separation: components, data access/query configs, schemas, utilities, and routing. Tests segregated by type.
+**Structure Decision**: Single web app under `app/` leveraging TanStack Router for file-based routing + loaders; no backend service needed.
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -127,7 +152,7 @@ app/
    - Rationale: [why chosen]
    - Alternatives considered: [what else evaluated]
 
-**Output**: research.md with all NEEDS CLARIFICATION resolved (created – see `specs/001-a-pwa-to/research.md`).
+**Output**: research.md with all NEEDS CLARIFICATION resolved (complete)
 
 ## Phase 1: Design & Contracts
 *Prerequisites: research.md complete*
@@ -160,7 +185,7 @@ app/
    - Keep under 150 lines for token efficiency
    - Output to repository root
 
-**Output**: data-model.md, /contracts/* (OpenAPI + README), quickstart.md, contract test stub (failing until code exists), agent file will be updated via script.
+**Output**: data-model.md, /contracts/*, quickstart.md, tests placeholders, agent file updated.
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
@@ -174,13 +199,18 @@ app/
 - Implementation tasks to make tests pass
 
 **Ordering Strategy**:
-- TDD order: Tests before implementation 
-- Dependency order: Models before services before UI
-- Mark [P] for parallel execution (independent files)
+- Tooling & infrastructure first (TS config, alias, lint, formatting)
+- Validation & utilities (schemas, slug util)
+- Data layer (firestore init, query options, loaders)
+- Routing & provider shell
+- UI components & forms
+- Offline & optimistic behaviors
+- Tests (unit → contract → integration)
+- PWA manifest/service worker finalization
 
-**Estimated Output**: 25-30 numbered, ordered tasks in tasks.md
+**Estimated Output**: ~30 tasks in tasks.md
 
-**IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
+**Phase 2 executed**: tasks.md generated in this run.
 
 ## Phase 3+: Future Implementation
 *These phases are beyond the scope of the /plan command*
@@ -190,7 +220,7 @@ app/
 **Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
 
 ## Complexity Tracking
-No deviations currently. Table retained for future use.
+No deviations currently.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|--------------------------------------|
@@ -202,8 +232,8 @@ No deviations currently. Table retained for future use.
 **Phase Status**:
 - [x] Phase 0: Research complete (/plan command)
 - [x] Phase 1: Design complete (/plan command)
-- [x] Phase 2: Task planning complete (/plan command - describe approach only)
-- [ ] Phase 3: Tasks generated (/tasks command)
+- [x] Phase 2: Task planning complete (tasks.md created)
+- [ ] Phase 3: Tasks generated (/tasks command) *N/A (already manually created here per prompt spec)*
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 

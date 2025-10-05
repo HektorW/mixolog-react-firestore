@@ -43,9 +43,29 @@ All clarifications satisfied in spec. No remaining NEEDS CLARIFICATION markers.
 - Alternatives: Full TDD across every component (unnecessary for small scope).
 
 ### Routing
-- Decision: Lightweight hash-based router or minimal stateful conditional on selected drink slug.
-- Rationale: Only two primary views; avoids dependency overhead.
-- Alternatives: React Router (heavier), custom history API (more code than needed).
+- Decision: TanStack Router (file-based) with route loaders to prefetch TanStack Query caches.
+- Rationale: Native integration with query prefetch, suspense-friendly, scales beyond 2 views while keeping code generation minimal.
+- Alternatives: Hash-based custom router (less featureful, manual prefetch complexity), React Router (heavier, no first-class query loader alignment yet), minimal conditional rendering (would inhibit deep-linking and prefetch semantics).
+
+### Loader Prefetch Strategy
+- Decision: Invoke query option factories inside loaders and `queryClient.ensureQueryData` to seed cache before component render.
+- Rationale: Eliminates loading flashes, ensures Suspense resolves immediately.
+- Alternatives: Component-level `useSuspenseQuery` only (introduces transient fallback flashes), manual prefetch in `onMount` (race conditions).
+
+### React Compiler
+- Decision: Enable experimental React Compiler in Vite config.
+- Rationale: Potential performance wins via memoization synthesis; low config cost.
+- Alternatives: Manual memoization (more boilerplate), no compiler (baseline acceptable but misses optimization opportunity).
+
+### Formatting & Linting
+- Decision: Prettier for formatting + ESLint (recommended, typescript, react-hooks) with Prettier last.
+- Rationale: Consistent code style and hooks rule enforcement; avoids style bikeshedding.
+- Alternatives: ESLint formatting rules only (slower, inconsistent), no formatter (inconsistent diffs).
+
+### Path Alias
+- Decision: '@/' alias to `./src` via tsconfig paths + vite-tsconfig-paths plugin.
+- Rationale: Improves import readability, reduces fragile relative paths when reorganizing directories.
+- Alternatives: Raw relative imports (harder refactors), additional alias layers (unnecessary complexity).
 
 ### Performance Boundaries
 - Decision: Keep bundle under 150KB gzip initial (achieved by avoiding large libs) and ensure queries are batched/suspended.
