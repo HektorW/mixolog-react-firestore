@@ -59,6 +59,7 @@ When creating this spec from a user prompt:
 - Q: How should recipes be ordered in the drink details view by default? → A: Most recent first.
 - Q: What accessibility target should this feature explicitly meet? → A: No formal target (semantic best effort only).
 - Q: What level of spacing/layout adjustments are allowed under “no styling”? → A: Minimal structural spacing only (line breaks, fieldsets, semantic grouping).
+- Q: How should validation/error messages be presented to the user? → A: Browser native validation messages only.
 
 
 ## User Scenarios & Testing *(mandatory)*
@@ -116,7 +117,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-017**: The system SHOULD handle rapid duplicate submissions gracefully (no duplicate persisted records).
 - **FR-018**: The system MUST ensure that user inputs (name, slug, recipe fields) are trimmed of leading/trailing whitespace before storage; slug normalization applied as defined.
 - **FR-019**: The system MUST persist all user-created data durably so that closing and reopening the app (after successful sync) retains the data set.
-- **FR-020**: The system SHOULD provide basic feedback upon successful creation (e.g., item appears in list) and upon rejection (duplicate / invalid input) [NEEDS CLARIFICATION: explicit error messaging requirements].
+- **FR-020**: The system MUST rely on browser native validation/error messages (e.g., required, pattern, length) with no custom inline or summary error UI; successful creation feedback is the immediate appearance of the new item.
 - **FR-021**: The system MUST allow navigation back from a drink detail view to the drinks list.
 - **FR-022**: The system MUST ensure that offline access includes previously viewed drink details and their recipes, if they were loaded during an earlier online session.
 - **FR-023**: The system MUST enforce a maximum length of 255 characters for drink names; input exceeding this limit is rejected with user feedback.
@@ -134,7 +135,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-035**: The system MUST ensure recipe data (including instructions and ingredients) is available offline once created or previously synced.
  - **FR-036**: The system SHOULD gracefully handle arbitrarily long recipe instructions (no hard length limit enforced) and store them fully.
 
-Ambiguity & Assumption Markers remain only for: explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, instructions length, recipe ordering, accessibility target, and spacing allowance are resolved.
+All previously identified ambiguities for this scope are now resolved.
 
 ### Key Entities *(include if feature involves data)*
 - **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp (internal only; not user visible), list of associated recipes (derived relation).
