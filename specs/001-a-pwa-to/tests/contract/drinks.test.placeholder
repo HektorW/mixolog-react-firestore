@@ -1,8 +1,0 @@
-Placeholder for future contract tests derived from OpenAPI. Will be converted to Vitest once code scaffold exists.
-
-Expected tests:
-- listDrinks returns array sorted A→Z by name
-- createDrink rejects duplicates (409)
-- getDrink returns drink + recipes[]
-- listRecipes returns recipes newest first
-- createRecipe enforces uniqueness of slug within drink

@@ -1,0 +1,9 @@
+{
+  "name": "Mixolog PWA",
+  "short_name": "Mixolog",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}

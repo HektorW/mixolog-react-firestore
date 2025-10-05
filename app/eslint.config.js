@@ -1,11 +1,11 @@
 // ESLint Flat Config
 // Reference: https://eslint.org/docs/latest/use/configure/configuration-files-new
 
-import js from '@eslint/js';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
+import js from '@eslint/js'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import reactHooks from 'eslint-plugin-react-hooks'
+import globals from 'globals'
 
 export default [
   // Ignore patterns
@@ -41,4 +41,4 @@ export default [
       ],
     },
   },
-];
+]

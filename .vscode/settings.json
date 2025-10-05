@@ -13,10 +13,6 @@
     "typescript",
     "typescriptreact"
   ],
-  "eslint.useFlatConfig": true,
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "app/node_modules/typescript/lib",
   "search.exclude": {
     "**/dist": true,

@@ -19,7 +19,7 @@
    → Update Progress Tracking: Initial Constitution Check
 5. Execute Phase 0 → research.md
    → If NEEDS CLARIFICATION remain: ERROR "Resolve unknowns"
-6. Execute Phase 1 → contracts, data-model.md, quickstart.md, agent-specific template file (e.g., `CLAUDE.md` for Claude Code, `.github/copilot-instructions.md` for GitHub Copilot, `GEMINI.md` for Gemini CLI, `QWEN.md` for Qwen Code, or `AGENTS.md` for all other agents).
+6. Execute Phase 1 → data-model.md, quickstart.md, agent-specific template file (contracts removed by scope simplification).
 7. Re-evaluate Constitution Check section
    → If new violations: Refactor design, return to Phase 1
    → Update Progress Tracking: Post-Design Constitution Check
@@ -83,7 +83,6 @@ specs/001-a-pwa-to/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── contracts/
 └── tasks.md (generated in Phase 2)
 ```
 
@@ -154,7 +153,7 @@ app/
 
 **Output**: research.md with all NEEDS CLARIFICATION resolved (complete)
 
-## Phase 1: Design & Contracts
+## Phase 1: Design Artifacts (Contracts Removed)
 *Prerequisites: research.md complete*
 
 1. **Extract entities from feature spec** → `data-model.md`:
@@ -162,21 +161,9 @@ app/
    - Validation rules from requirements
    - State transitions if applicable
 
-2. **Generate API contracts** from functional requirements:
-   - For each user action → endpoint
-   - Use standard REST/GraphQL patterns
-   - Output OpenAPI/GraphQL schema to `/contracts/`
+2. **Selective test scenario extraction** (minimal testing) from user stories → integrate into `quickstart.md` manual verification steps (no contract layer).
 
-3. **Generate contract tests** from contracts:
-   - One test file per endpoint
-   - Assert request/response schemas
-   - Tests must fail (no implementation yet)
-
-4. **Extract test scenarios** from user stories:
-   - Each story → integration test scenario
-   - Quickstart test = story validation steps
-
-5. **Update agent file incrementally** (O(1) operation):
+3. **Update agent file incrementally** (O(1) operation):
    - Run `.specify/scripts/bash/update-agent-context.sh copilot`
      **IMPORTANT**: Execute it exactly as specified above. Do not add or remove any arguments.
    - If exists: Add only NEW tech from current plan
@@ -185,18 +172,17 @@ app/
    - Keep under 150 lines for token efficiency
    - Output to repository root
 
-**Output**: data-model.md, /contracts/*, quickstart.md, tests placeholders, agent file updated.
+**Output**: data-model.md, quickstart.md, agent file updated. (No contracts directory.)
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
 **Task Generation Strategy**:
 - Load `.specify/templates/tasks-template.md` as base
-- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
-- Each contract → contract test task [P]
-- Each entity → model creation task [P] 
-- Each user story → integration test task
-- Implementation tasks to make tests pass
+- Generate tasks from Phase 1 design docs (data model, quickstart)
+- Each entity → model creation task [P]
+- Selected user stories → minimal integration smoke (optional)
+- Implementation tasks drawn directly from entities + data access patterns
 
 **Ordering Strategy**:
 - Tooling & infrastructure first (TS config, alias, lint, formatting)

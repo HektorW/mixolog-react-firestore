@@ -1,72 +1,117 @@
-# Task Plan: Drink & Recipe Tracking (Offline PWA)
+# Tasks: Drink & Recipe Tracking (Offline PWA)
 
-Generated for Phase 2 based on plan.md (includes TanStack Router, loaders, React Compiler, Prettier, ESLint, path alias).
+Input: Design documents in `/specs/001-a-pwa-to/` (plan.md, data-model.md, quickstart.md, research.md)
+Prerequisites: Current branch `001-a-pwa-to`, implementation plan approved, constitution checks PASS.
 
-Legend: [P] = parallelizable, (B) = blocking predecessor(s), (O) = optional/nice-to-have
+Format: `[ID] [P?] Description (Dependencies)`
+Legend: `[P]` = may run in parallel (different file, no unmet deps). No `[P]` = must follow listed dependencies or shares file. Optional/nice-to-have tasks explicitly marked `(Optional)`.
 
-## Foundational & Tooling
-1. Initialize Vite React TS project in `app/` (remove default boilerplate). (B: none)
-2. Add strict `tsconfig.json` with path alias '@/*'. (B:1)
-3. Install dependencies: react, react-dom, @tanstack/react-query, @tanstack/router, firebase, zod. (B:1)
-4. Install dev deps: typescript, vite, vitest, @testing-library/react, @testing-library/user-event, jsdom, eslint, @typescript-eslint/parser, @typescript-eslint/eslint-plugin, eslint-plugin-react-hooks, prettier, vite-tsconfig-paths. (B:1)
-5. Configure ESLint (minimal recommended + typescript + react-hooks) and Prettier integration (no conflicting rules). (B:2,3,4)
-6. Add vite.config.ts with React plugin, vite-tsconfig-paths, React Compiler enable flag (experimental). (B:2,3,4)
-7. Add npm scripts: dev, build, preview, test, lint, format. (B:3,4)
-8. Set up `.prettierrc` and `.eslintignore` / `.gitignore` entries. (B:5)
+Test Strategy (aligning with Constitution Principle 6 Minimal Testing): High‑value tests (critical logic & representative user flows) are recommended to be authored early. Not all tasks require tests; broad mandatory TDD is intentionally avoided. Where tests exist they should initially fail before corresponding implementation changes.
 
-## Data Modeling & Validation
-9. Implement Zod schemas: `DrinkSchema`, `RecipeSchema`, `IngredientSchema`. (B:3) [P]
-10. Implement slug normalization utility `slug.ts` + unit tests (Vitest). (B:3) [P]
-11. Implement Firestore init `firestore.ts` with offline persistence enablement. (B:3) [P]
-12. Define TypeScript domain types from Zod inference (export) to ensure single source of truth. (B:9) [P]
+## Phase 3.1: Setup / Scaffolding
+- [X] T001 Create base project structure `app/` with folders: `app/src/{routes,components/common,data,schemas,sw}` `app/tests/{unit,contract,integration}` and `app/public/` (index.html placeholder). (Deps: —)
+- [X] T002 Initialize Vite React TS project in `app/` (remove boilerplate) producing `app/package.json`, `app/tsconfig.json`, `app/src/main.tsx`. (Deps: T001)
+- [X] T003 Add strict `tsconfig.json` path alias '@/*' + `vite-env.d.ts`. (Deps: T002)
+- [X] T004 Install runtime deps: react, react-dom, @tanstack/react-query, @tanstack/router, firebase, zod, vite-tsconfig-paths. (Deps: T002)
+- [X] T005 Install dev deps: typescript, vite, vitest, @testing-library/react, @testing-library/user-event, jsdom, eslint, @typescript-eslint/parser, @typescript-eslint/eslint-plugin, eslint-plugin-react-hooks, prettier, @types/node. (Deps: T002)
+- [X] T006 Configure ESLint + Prettier (.eslintrc, .prettierrc, `.eslintignore`) and npm scripts: dev, build, preview, test, lint, format, typecheck. (Deps: T003,T004,T005)
+- [X] T007 Add `vite.config.ts` with React plugin, `vite-tsconfig-paths`, experimental React Compiler flag enabled, and build chunk size limits. (Deps: T006)
+- [X] T008 Add PWA assets: `app/public/manifest.webmanifest` (name, short_name, offline display), stub icons dir, and stub service worker files `app/src/sw/service-worker.ts`, `app/src/sw/register-sw.ts`. (Deps: T001)
 
-## Query Layer
-13. Implement query option factories in `queries.ts`: `drinkListQueryOpts`, `drinkDetailQueryOpts(drinkSlug)`, `recipesForDrinkQueryOpts(drinkSlug)`. (B:9,11)
-14. Implement create mutation helpers: `createDrink`, `createRecipe` with Zod validation before write. (B:9,11)
-15. Add optimistic update logic for create operations (query cache manual update) ensuring dedupe via slug. (B:13,14)
-16. Add duplicate prevention utility invoked pre-write (checks normalized slug existence via cache then fallback Firestore query). (B:13)
+## Phase 3.2: Selective Tests (Optional Minimal Set)
+Purpose: Align with Constitution Principle 6 (minimal testing). Only critical pure logic and one end‑to‑end smoke path are covered. All other behavior verified manually (see Manual Verification Checklist in Phase 3.5). Tests below are OPTIONAL but recommended.
+- [ ] T010 [P] Unit test slug normalization edge cases `app/tests/unit/slug.test.ts`. (Deps: T007)
+- [ ] T011 [P] Unit test uniqueness logic (drink & recipe slug) `app/tests/unit/uniqueness.test.ts`. (Deps: T007)
+- [ ] T012 [P] Integration smoke: create drink & recipe offline then reconnect (optimistic visibility, offline cache) `app/tests/integration/smoke-offline-create.int.test.ts`. (Deps: T007)
 
-## Routing & Loaders
-17. Scaffold TanStack Router root route (`__root.tsx`) with QueryClientProvider, RouterProvider, ErrorBoundary, Suspense fallback. (B:13)
-18. Create file-based route for `/` drinks list with loader prefetch of `drinkListQueryOpts`. (B:17)
-19. Create file-based route for `/drinks/:drinkSlug` with loader prefetch of drink + recipes queries (parallel). (B:17)
-20. Implement shared loader helper `primeQuery(client, opts)` to DRY prefetch logic. (B:13,17) [P]
+Deprecated / Pruned Former Test Tasks: (T009,T013–T023,T057–T068) intentionally removed to keep scope lean. Refer to git history if reactivation needed.
 
-## UI Components
-21. Implement `CreateDrinkForm` (slug auto-generate, editable before submit, native validation). (B:16,18)
-22. Implement `DrinkList` (alphabetical, links to detail routes). (B:18)
-23. Implement `CreateRecipeForm` (ingredients dynamic list, slug generation). (B:19)
-24. Implement `DrinkDetail` (shows drink + recipes newest first). (B:19)
-25. Wire optimistic UI after create for drink/recipe (update caches, fallback to refetch on error). (B:21,23)
+## Phase 3.3: Core Implementation
+### Schemas / Models
+- [ ] T024 [P] Implement Drink schema & type in `app/src/schemas/drink.ts` (Zod + inferred TS). (Deps: —)
+- [ ] T025 [P] Implement Ingredient schema & type in `app/src/schemas/ingredient.ts`. (Deps: —)
+- [ ] T026 Implement Recipe schema & type (imports Ingredient) in `app/src/schemas/recipe.ts`. (Deps: T025)
+### Utilities & Data Layer
+- [ ] T027 [P] Implement slug normalization utility in `app/src/data/slug.ts` (make T010 pass). (Deps: T010)
+- [ ] T028 [P] Firestore init with offline persistence in `app/src/data/firestore.ts`. (Deps: T007)
+- [ ] T029 Implement query option factories in `app/src/data/queries.ts` (drink list, drink detail(+recipes), recipes list). (Deps: T024,T026,T028)
+- [ ] T030 Implement uniqueness checks in `app/src/data/uniqueness.ts` (cache first, Firestore fallback) to satisfy T011. (Deps: T027,T028,T024,T026)
+- [ ] T031 Implement create mutations in `app/src/data/mutations.ts` (createDrink, createRecipe) w/ Zod validate + uniqueness. (Deps: T029,T030)
+- [ ] T032 Implement loaders helper `app/src/data/loaders.ts` (primeQuery wrapper). (Deps: T029)
+### Routing
+- [ ] T033 Implement root route `app/src/routes/__root.tsx` (QueryClientProvider, RouterProvider, ErrorBoundary, SuspenseFallback). (Deps: T032)
+- [ ] T034 Implement index route `app/src/routes/index.route.tsx` with loader prefetch of drink list. (Deps: T033)
+- [ ] T035 Implement drink detail route `app/src/routes/drinks.$drinkSlug.route.tsx` prefetching drink + recipes queries. (Deps: T033)
+### Components
+- [ ] T036 Implement DrinkList component `app/src/components/DrinkList.tsx` (alphabetical, links). (Deps: T034)
+- [ ] T037 Implement CreateDrinkForm `app/src/components/CreateDrinkForm.tsx` (slug auto + editable, native validation). (Deps: T027,T030,T031,T034)
+- [ ] T038 Implement DrinkDetail component `app/src/components/DrinkDetail.tsx` (shows drink + recipes newest-first). (Deps: T035)
+- [ ] T039 Implement CreateRecipeForm `app/src/components/CreateRecipeForm.tsx` (dynamic ingredients, slug auto). (Deps: T027,T030,T031,T035)
+- [ ] T040 Implement optimistic update helpers `app/src/data/optimistic.ts` integrate into mutations (cache insert + rollback). (Deps: T031)
+### Offline / PWA
+- [ ] T041 Implement service worker caching (app shell + static assets) in `app/src/sw/service-worker.ts` + register in `app/src/sw/register-sw.ts`. (Deps: T008,T033)
+### Error & Suspense Boundaries
+- [ ] T042 [P] Implement ErrorBoundary component `app/src/components/common/ErrorBoundary.tsx`. (Deps: T033)
+- [ ] T043 [P] Implement SuspenseFallback component `app/src/components/common/SuspenseFallback.tsx`. (Deps: T033)
+### Wiring
+- [ ] T044 Wire routes & components in `app/src/main.tsx` (providers, service worker registration, route tree). (Deps: T036,T037,T038,T039,T042,T043)
 
-## Offline & PWA
-26. Add `manifest.webmanifest` (name, short_name, icons placeholders). (B:1)
-27. Implement service worker (`service-worker.ts`) caching strategy: precache app shell + runtime network-first for Firestore (delegated to SDK). (B:1,11)
-28. Register SW via `register-sw.ts` in bootstrap sequence. (B:27)
+## Phase 3.4: Integration Refinements
+- [ ] T045 Ensure recipe ordering newest-first at data layer (query sort) satisfying Story 3 test (adjust queries.ts). (Deps: T029,T038)
+- [ ] T046 Ensure drinks alphabetical ordering at query layer (case-insensitive) satisfying Story 1. (Deps: T029,T036)
+- [ ] T047 Ensure offline detail data available via prefetch + Firestore cache (adjust loader strategy) satisfying Story 5. (Deps: T032,T033,T035,T041)
 
-## Error & Suspense Boundaries
-29. Implement reusable `ErrorBoundary.tsx` and `SuspenseFallback.tsx` (semantic markup). (B:17) [P]
-30. Add route-level boundaries to root and nested routes. (B:29,17)
+## Phase 3.5: Polish & Quality
+// Removed former T048 (contract enhancement) due to contract elimination
+- [ ] T049 Add unit tests for optimistic update rollback logic `app/tests/unit/optimistic.test.ts`. (Deps: T040)
+- [ ] T050 [P] Lint & format all code (eslint, prettier) fix violations. (Deps: T044)
+- [ ] T051 Bundle size check (<150KB gzip) and adjust imports (analyze build output). (Deps: T044)
+- [ ] T052 Update `specs/001-a-pwa-to/quickstart.md` with final scripts/routing/offline notes. (Deps: T050)
+- [ ] T053 Run `.specify/scripts/bash/update-agent-context.sh copilot` to update `.github/copilot-instructions.md`. (Deps: T050)
+- [ ] T054 Final verification: all tests green (unit, contract, integration) & manual offline scenario pass. (Deps: T045-T053)
+- [ ] T069 Collect performance metrics (Lighthouse or web-vitals script) verifying NFR-001 & NFR-002 thresholds `app/tests/perf/performance-metrics.md`. (Deps: T044)
 
-## Testing
-31. Add Vitest config + setup (jsdom). (B:4)
-32. Unit tests for slug normalization edge cases (duplicates, trimming, length). (B:10)
-33. Unit tests for duplicate prevention logic (cache hit vs Firestore simulated). (B:16)
-34. Contract test stubs referencing OpenAPI to validate expected shapes (mapping pseudo endpoints to query/mutation functions). (B:13,14)
-35. Integration test: create drink → appears in list (optimistic vs confirmed). (B:21,22)
-36. Integration test: create recipe → appears newest first. (B:23,24)
-37. Integration test: offline create then reconnect sync (mock Firestore offline). (B:11,21,23)
+## Optional Enhancements (Post-MVP)
+- [ ] T055 (Optional) Offline status banner component `app/src/components/OfflineIndicator.tsx`.
+- [ ] T056 (Optional) Slug suggestion fallback (append numeric suffix) `app/src/data/slug-suggest.ts`.
 
-## Quality & Tooling Finalization
-38. Lint pass & format all sources; fix issues. (B:21-37)
-39. Bundle size check (<150KB gzip) and note in README; adjust imports if exceeded. (B:21-27)
-40. Update quickstart.md with final scripts & routing notes. (B:38)
-41. Update `.github/copilot-instructions.md` via script to reflect added Router + lint/format stack. (B:38)
+## Dependencies Summary
+Setup: T001 → T002 → T003 → (T004,T005) → T006 → T007 → T008
+Tests: All optional tests (T010–T012) depend on environment (T007) and can run in parallel.
+Schemas: T024,T025 parallel; T026 depends on T025.
+Utilities: T027 independent (after T010); T028 independent (after setup); T029 depends on schemas + firestore; T030 depends on slug + firestore + schemas; T031 depends on queries + uniqueness; T032 depends on queries.
+Routing: Root (T033) depends on loaders; index/detail (T034,T035) depend on root.
+Components: DrinkList (T036) depends on index route; CreateDrinkForm (T037) depends on mutations + list; DrinkDetail (T038) depends on detail route; CreateRecipeForm (T039) depends on mutations + detail; Optimistic helpers (T040) depend on mutations.
+PWA: Service worker (T041) after stub + root route.
+Boundaries: T042,T043 parallel after root route.
+Wiring: T044 after components + boundaries.
+Refinements: Ordering & offline refinements (T045-T047) after core wiring.
+Polish: Tests & quality tasks finalize (T048-T054).
 
-## Optional Enhancements (Not in MVP)
-42. (O) Basic offline indicator banner.
-43. (O) Slug collision suggestions (append numeric suffix automatically).
+## Parallel Execution Examples
+Example 1 (after setup): Optional tests in parallel:
+	Tasks: T010 T011 (add T012 if smoke desired)
+
+Example 2 (schema phase):
+	Run T024 and T025 together; once both complete, do T026.
+
+Example 3 (early data layer):
+	Run T027 and T028 concurrently; then proceed with T029.
+
+Example 4 (components):
+	After T035, implement T036 & T042 & T043 concurrently (separate files) before starting T037.
+
+## Validation Checklist
+- [ ] Each data access path mapped to implementation (T029-T031 + T033-T035)
+- [ ] Entities Drink, Recipe, Ingredient have schema tasks (T024-T026)
+- [ ] (If chosen) Minimal tests (T010–T012) authored before dependent logic to catch regressions
+- [ ] Manual Verification Checklist executed for untested FRs
+- [ ] Parallel tasks do not share files
+- [ ] All tasks specify concrete file paths
+- [ ] Uniqueness & slug logic tested before implementation (T010,T011)
 
 ## Completion Criteria
-- All mandatory tasks (1-41) done, tests green, plan gates remain PASS.
-- Optional tasks considered if time.
+All mandatory tasks T001–T054 completed with passing tests and constitutional principles maintained. Optional tasks (T055–T056) may be done if time without jeopardizing scope.
+
+---
+Generated from design artifacts on 2025-10-05.
