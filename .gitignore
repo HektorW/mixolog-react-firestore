@@ -1,0 +1,103 @@
+# --- Node / TypeScript mono-ish workspace ---
+node_modules/
+**/node_modules/
+
+# Build outputs
+/dist/
+**/dist/
+/build/
+**/build/
+.out/
+.vite/
+
+# TypeScript build info
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Caches
+.cache/
+.turbo/
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Tests / Coverage
+coverage/
+.nyc_output/
+.jest-cache/
+.jest-test-results.json
+
+# Temporary files
+.tmp/
+tmp/
+temp/
+
+# IDE / Editor
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+.firebase/
+
+# Firebase / Emulator / Debug
+firebase-debug.log
+**/firebase-debug.log
+.firebaserc
+
+# Service worker builds (if generated to public)
+app/public/sw.js
+app/public/sw.js.map
+
+# PWA generated assets (adjust if you commit these)
+public/assets/
+public/icon-*.png
+
+# Parcel / Other bundlers residual (defensive)
+*.cache
+
+# Lockfiles (keep exactly one; uncomment to ignore alternates)
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
+
+# Mac specific
+*.icloud
+
+# Misc
+*.tgz
+*.orig
+*.rej
+*.patch
+
+# VSCode crash reports
+code-*.*
+
+# Git merge / rebase artifacts
+MERGE_*
+REBASE_*
+
+# End of file
