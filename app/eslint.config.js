@@ -2,25 +2,30 @@
 // Reference: https://eslint.org/docs/latest/use/configure/configuration-files-new
 
 import js from '@eslint/js';
-import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import reactHooks from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 
 export default [
   // Ignore patterns
   {
-    ignores: ['dist', 'node_modules']
+    ignores: ['dist', 'node_modules'],
   },
   {
     files: ['**/*.{js,cjs,mjs,ts,tsx,jsx}'],
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 'latest',
-      sourceType: 'module'
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        // Add any project-specific globals below (value indicates read-only vs writable)
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
     },
     // Merge in recommended rule sets then apply project overrides
     rules: {
@@ -30,7 +35,10 @@ export default [
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       // Project customizations
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }]
-    }
-  }
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
+    },
+  },
 ];
