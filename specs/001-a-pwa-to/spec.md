@@ -59,16 +59,18 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 
 ### Acceptance Scenarios
 1. **Given** there are existing drinks, **When** the user opens the application online or offline after prior sync, **Then** the landing page lists all drinks alphabetically by drink name.
-2. **Given** the landing page is displayed, **When** the user submits a new drink with a non-empty name not already present (case-insensitive), **Then** the drink appears in the correct alphabetical position in the list.
+2. **Given** the landing page is displayed, **When** the user initiates adding a new drink and enters a valid name, **Then** a slug is auto-generated (lowercase, hyphen-separated) and pre-filled; user may adjust the slug before submitting.
 3. **Given** a drink is listed, **When** the user selects (clicks) that drink, **Then** a drink details view is shown displaying the drink name and all of its recipes (if any) in a readable order (see FR for ordering).
 4. **Given** a drink details view is shown, **When** the user adds a new recipe with required fields provided, **Then** the recipe is appended to the drink's recipes list and visible immediately without page reload.
 5. **Given** the user previously loaded data while online, **When** the user returns while offline, **Then** previously stored drinks and recipes remain accessible and navigable.
 6. **Given** the system has no drinks stored, **When** the user first lands on the application, **Then** an empty-state message is shown and an input to add a new drink is available.
-7. **Given** the user attempts to add a drink with a name differing only by letter case from an existing one, **When** they submit, **Then** the system prevents duplicate creation and informs the user (or silently ignores) [NEEDS CLARIFICATION: preferred duplicate handling feedback].
+7. **Given** the user attempts to add a drink whose name or generated/edited slug collides case-insensitively with an existing drink's name or slug, **When** they submit, **Then** the system prevents duplicate creation and informs the user (or silently blocks) [NEEDS CLARIFICATION: preferred duplicate feedback mechanism].
 8. **Given** the user is offline and attempts to add a new drink or recipe, **When** they submit, **Then** the new item appears locally and is queued for synchronization once online [NEEDS CLARIFICATION: explicit confirmation of sync requirements].
 
 ### Edge Cases
 - Adding a drink with leading/trailing whitespace in the name → should trim before uniqueness evaluation.
+- Editing the auto-generated slug prior to creation to include disallowed characters → system normalizes or rejects [NEEDS CLARIFICATION: normalization vs validation failure].
+- Slug manually changed to one that already exists → duplicate prevention still enforced.
 - Very long drink or recipe names/descriptions exceeding an internal limit [NEEDS CLARIFICATION: max lengths].
 - Offline first load with no prior cached data → show empty state gracefully.
 - Rapid consecutive submissions (double-click) → system should avoid duplicate entries.
@@ -79,9 +81,28 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 ### Functional Requirements
 The feature description explicitly mentions technology (Firestore, PWA) for context; however, this specification expresses only observable behaviors (WHAT) and constraints.
 
-- **FR-001**: The system MUST allow users to create a new drink by providing at minimum a drink name (text, non-empty after trimming).
-- **FR-002**: The system MUST display all stored drinks on the initial view sorted in ascending alphabetical order (case-insensitive) by drink name.
-- **FR-003**: The system MUST prevent creation of duplicate drinks where names match case-insensitively after trimming.
+- **FR-001**: The system MUST allow users to create a new drink by providing at minimum a drink name (text, non-empty after trimming) and a slug.
+- **FR-002**: The system MUST auto-generate a default slug from the entered name (lowercase, spaces & disallowed characters converted to hyphens, collapse repeats, trim hyphens) and pre-fill it for user review.
+- **FR-003**: The system MUST allow the user to manually edit the slug before finalizing drink creation; after creation the slug is immutable.
+- **FR-004**: The system MUST display all stored drinks on the initial view sorted in ascending alphabetical order (case-insensitive) by drink name.
+- **FR-005**: The system MUST prevent creation of duplicate drinks where either (a) names match case-insensitively after trimming OR (b) slugs match exactly case-insensitively.
+- **FR-006**: The system MUST allow users to select a drink to view its details including its list of associated recipes.
+- **FR-007**: The system MUST allow users to add a new recipe to a selected drink with required recipe fields (at minimum a recipe title/name) [NEEDS CLARIFICATION: required recipe fields beyond name? ingredients? instructions?].
+- **FR-008**: The system MUST immediately show a newly added drink or recipe in the current session without full page reload.
+- **FR-009**: The system MUST store drinks and recipes such that they remain available for browsing when the device is offline (previously synchronized data accessible offline).
+- **FR-010**: The system MUST queue user-added drinks and recipes performed while offline for later synchronization when connectivity resumes [NEEDS CLARIFICATION: conflict resolution strategy].
+- **FR-011**: The system MUST not provide any functionality to edit existing drinks or recipes after creation (except slug adjustment prior to initial submission).
+- **FR-012**: The system MUST not provide any functionality to delete drinks or recipes.
+- **FR-013**: The system MUST present semantic HTML structure (e.g., lists for collections, headings for sections) [NEEDS CLARIFICATION: accessibility standards to meet (e.g., WCAG level)?].
+- **FR-014**: The system MUST rely solely on default user agent styling (no custom visual styling) aside from minimal layout necessary for clarity [NEEDS CLARIFICATION: allowance for basic spacing?].
+- **FR-015**: The system SHOULD provide an empty state indicator when no drinks exist.
+- **FR-016**: The system SHOULD maintain the order of recipes for a drink in order of creation unless another ordering is specified [NEEDS CLARIFICATION: desired recipe ordering? alphabetical vs creation time].
+- **FR-017**: The system SHOULD handle rapid duplicate submissions gracefully (no duplicate persisted records).
+- **FR-018**: The system MUST ensure that user inputs (name, slug, recipe fields) are trimmed of leading/trailing whitespace before storage; slug normalization applied as defined.
+- **FR-019**: The system MUST persist all user-created data durably so that closing and reopening the app (after successful sync) retains the data set.
+- **FR-020**: The system SHOULD provide basic feedback upon successful creation (e.g., item appears in list) and upon rejection (duplicate / invalid input) [NEEDS CLARIFICATION: explicit error messaging requirements].
+- **FR-021**: The system MUST allow navigation back from a drink detail view to the drinks list.
+- **FR-022**: The system MUST ensure that offline access includes previously viewed drink details and their recipes, if they were loaded during an earlier online session.
 - **FR-004**: The system MUST allow users to select a drink to view its details including its list of associated recipes.
 - **FR-005**: The system MUST allow users to add a new recipe to a selected drink with required recipe fields (at minimum a recipe title/name) [NEEDS CLARIFICATION: required recipe fields beyond name? ingredients? instructions?].
 - **FR-006**: The system MUST immediately show a newly added drink or recipe in the current session without full page reload.
@@ -103,7 +124,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 Ambiguity & Assumption Markers included above for clarity pending stakeholder input.
 
 ### Key Entities *(include if feature involves data)*
-- **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive), created timestamp [NEEDS CLARIFICATION: is timestamp user-visible?], list of associated recipes (derived relation).
+- **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive), slug (URL/identifier-safe, unique, user-adjustable before creation only), created timestamp [NEEDS CLARIFICATION: is timestamp user-visible?], list of associated recipes (derived relation).
 - **Recipe**: Represents a specific formulation/instructions for preparing a given drink. Attributes: recipe name/title, (optional) ingredients list [NEEDS CLARIFICATION: include? structure?], (optional) preparation steps text, creation timestamp, parent drink reference.
 
 Potential Additional (Not Confirmed):
