@@ -52,6 +52,12 @@ When creating this spec from a user prompt:
 
 ---
 
+## Clarifications
+
+### Session 2025-10-05
+- Q: What is the maximum allowed length for recipe instructions (after which the system should reject or truncate)? → A: No hard limit.
+
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### Primary User Story
@@ -81,7 +87,7 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 - Recipe created concurrently on multiple devices → last write wins per default backing store behavior; duplicates may appear if distinct IDs are created.
  - Recipe submitted with empty ingredients list → rejected (must include at least one ingredient entry).
  - Ingredient item missing amount or name → rejected with feedback.
- - Instructions extremely long → may impact performance [NEEDS CLARIFICATION: maximum instructions length].
+ - Extremely long instructions allowed (no enforced limit); performance considerations deferred to platform.
 
 ## Requirements *(mandatory)*
 
@@ -123,8 +129,9 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-033**: The system MUST require at least one ingredient entry per recipe; each ingredient MUST include a name (≤255 chars) and amount (≤255 chars) and MAY include a unit (≤50 chars).
 - **FR-034**: The system MUST display ingredients for a recipe in the order entered.
 - **FR-035**: The system MUST ensure recipe data (including instructions and ingredients) is available offline once created or previously synced.
+ - **FR-036**: The system SHOULD gracefully handle arbitrarily long recipe instructions (no hard length limit enforced) and store them fully.
 
-Ambiguity & Assumption Markers remain only for: accessibility level target, spacing allowance under "no styling", potential alternative recipe ordering preference (currently insertion order), explicit error messaging wording, maximum instructions length. Sync & conflict handling, recipe field set, and timestamp visibility are resolved.
+Ambiguity & Assumption Markers remain only for: accessibility level target, spacing allowance under "no styling", potential alternative recipe ordering preference (currently insertion order), explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, and instructions length are resolved.
 
 ### Key Entities *(include if feature involves data)*
 - **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp (internal only; not user visible), list of associated recipes (derived relation).
