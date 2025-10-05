@@ -58,6 +58,7 @@ When creating this spec from a user prompt:
 - Q: What is the maximum allowed length for recipe instructions (after which the system should reject or truncate)? → A: No hard limit.
 - Q: How should recipes be ordered in the drink details view by default? → A: Most recent first.
 - Q: What accessibility target should this feature explicitly meet? → A: No formal target (semantic best effort only).
+- Q: What level of spacing/layout adjustments are allowed under “no styling”? → A: Minimal structural spacing only (line breaks, fieldsets, semantic grouping).
 
 
 ## User Scenarios & Testing *(mandatory)*
@@ -109,7 +110,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-011**: The system MUST not provide any functionality to edit existing drinks or recipes after creation (except slug adjustment prior to initial submission).
 - **FR-012**: The system MUST not provide any functionality to delete drinks or recipes.
 - **FR-013**: The system MUST present semantic HTML structure (headings, lists, form labels) and rely on native browser accessibility; no formal WCAG conformance level is in scope beyond basic semantic correctness.
-- **FR-014**: The system MUST rely solely on default user agent styling (no custom visual styling) aside from minimal layout necessary for clarity [NEEDS CLARIFICATION: allowance for basic spacing?].
+- **FR-014**: The system MUST rely solely on default user agent styling (no custom CSS classes or custom margins/padding) but MAY use minimal structural HTML (line breaks, paragraphs, lists, fieldset/legend, section/article) to group content for readability.
 - **FR-015**: The system SHOULD provide an empty state indicator when no drinks exist.
 - **FR-016**: The system MUST display recipes for a drink newest first (reverse chronological by creation timestamp).
 - **FR-017**: The system SHOULD handle rapid duplicate submissions gracefully (no duplicate persisted records).
@@ -133,7 +134,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-035**: The system MUST ensure recipe data (including instructions and ingredients) is available offline once created or previously synced.
  - **FR-036**: The system SHOULD gracefully handle arbitrarily long recipe instructions (no hard length limit enforced) and store them fully.
 
-Ambiguity & Assumption Markers remain only for: spacing allowance under "no styling", explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, instructions length, recipe ordering, and accessibility target are resolved.
+Ambiguity & Assumption Markers remain only for: explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, instructions length, recipe ordering, accessibility target, and spacing allowance are resolved.
 
 ### Key Entities *(include if feature involves data)*
 - **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp (internal only; not user visible), list of associated recipes (derived relation).
