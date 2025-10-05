@@ -56,6 +56,7 @@ When creating this spec from a user prompt:
 
 ### Session 2025-10-05
 - Q: What is the maximum allowed length for recipe instructions (after which the system should reject or truncate)? → A: No hard limit.
+- Q: How should recipes be ordered in the drink details view by default? → A: Most recent first.
 
 
 ## User Scenarios & Testing *(mandatory)*
@@ -66,7 +67,7 @@ As a beverage enthusiast, I want to record drinks and multiple recipes for each 
 ### Acceptance Scenarios
 1. **Given** there are existing drinks, **When** the user opens the application online or offline after prior sync, **Then** the landing page lists all drinks alphabetically by drink name.
 2. **Given** the landing page is displayed, **When** the user initiates adding a new drink and enters a valid name, **Then** a slug is auto-generated (lowercase, hyphen-separated) and pre-filled; user may adjust the slug before submitting.
-3. **Given** a drink is listed, **When** the user selects (clicks) that drink, **Then** a drink details view is shown displaying the drink name and all of its recipes (if any) in a readable order (see FR for ordering).
+3. **Given** a drink is listed, **When** the user selects (clicks) that drink, **Then** a drink details view is shown displaying the drink name and all of its recipes (if any) ordered with most recent (newest) recipes first.
 4. **Given** a drink details view is shown, **When** the user adds a new recipe with required fields provided, **Then** the recipe is appended to the drink's recipes list and visible immediately without page reload.
 5. **Given** the user previously loaded data while online, **When** the user returns while offline, **Then** previously stored drinks and recipes remain accessible and navigable.
 6. **Given** the system has no drinks stored, **When** the user first lands on the application, **Then** an empty-state message is shown and an input to add a new drink is available.
@@ -109,7 +110,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-013**: The system MUST present semantic HTML structure (e.g., lists for collections, headings for sections) [NEEDS CLARIFICATION: accessibility standards to meet (e.g., WCAG level)?].
 - **FR-014**: The system MUST rely solely on default user agent styling (no custom visual styling) aside from minimal layout necessary for clarity [NEEDS CLARIFICATION: allowance for basic spacing?].
 - **FR-015**: The system SHOULD provide an empty state indicator when no drinks exist.
-- **FR-016**: The system SHOULD maintain the order of recipes for a drink in order of creation unless another ordering is specified [NEEDS CLARIFICATION: desired recipe ordering? alphabetical vs creation time].
+- **FR-016**: The system MUST display recipes for a drink newest first (reverse chronological by creation timestamp).
 - **FR-017**: The system SHOULD handle rapid duplicate submissions gracefully (no duplicate persisted records).
 - **FR-018**: The system MUST ensure that user inputs (name, slug, recipe fields) are trimmed of leading/trailing whitespace before storage; slug normalization applied as defined.
 - **FR-019**: The system MUST persist all user-created data durably so that closing and reopening the app (after successful sync) retains the data set.
@@ -131,7 +132,7 @@ The feature description explicitly mentions technology (Firestore, PWA) for cont
 - **FR-035**: The system MUST ensure recipe data (including instructions and ingredients) is available offline once created or previously synced.
  - **FR-036**: The system SHOULD gracefully handle arbitrarily long recipe instructions (no hard length limit enforced) and store them fully.
 
-Ambiguity & Assumption Markers remain only for: accessibility level target, spacing allowance under "no styling", potential alternative recipe ordering preference (currently insertion order), explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, and instructions length are resolved.
+Ambiguity & Assumption Markers remain only for: accessibility level target, spacing allowance under "no styling", explicit error messaging wording. Sync & conflict handling, recipe field set, timestamp visibility, instructions length, and recipe ordering are resolved.
 
 ### Key Entities *(include if feature involves data)*
 - **Drink**: Represents a distinct beverage concept the user tracks. Attributes: name (unique, case-insensitive, ≤255 chars), slug (URL/identifier-safe, unique, ≤255 chars, user-adjustable before creation only), created timestamp (internal only; not user visible), list of associated recipes (derived relation).
