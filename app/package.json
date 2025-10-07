@@ -14,13 +14,14 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
-    "@tanstack/react-router": "^1.132.37",
+    "@tanstack/react-router": "^1.132.47",
     "firebase": "^12.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@tanstack/router-plugin": "^1.132.47",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.6.2",
