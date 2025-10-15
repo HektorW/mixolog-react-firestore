@@ -1,8 +1,8 @@
 // T034 index route listing drinks
-import { CreateDrinkForm } from '@/components/CreateDrinkForm'
+import { DrinkList } from '@/components/DrinkList'
 import { drinksListOptions } from '@/data/queries'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { Suspense } from 'react'
 
 export const Route = createFileRoute('/')({
   loader: ({ context }) => {
@@ -14,24 +14,15 @@ export const Route = createFileRoute('/')({
 })
 
 function IndexComponent() {
-  const { data } = useSuspenseQuery(drinksListOptions())
   return (
     <main>
       <h1>Drinks</h1>
-      <CreateDrinkForm />
-      {data.length === 0 ? (
-        <p>No drinks yet.</p>
-      ) : (
-        <ul>
-          {data.map((d) => (
-            <li key={d.slug}>
-              <Link to={'/drinks/$drinkSlug'} params={{ drinkSlug: d.slug }}>
-                {d.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+
+      <Suspense fallback={<DrinkList.Skeleton />}>
+        <DrinkList />
+      </Suspense>
+
+      <Link to="/drinks/create">Add drink</Link>
     </main>
   )
 }

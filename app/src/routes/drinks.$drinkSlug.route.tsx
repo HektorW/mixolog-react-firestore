@@ -1,4 +1,5 @@
 // T035 drink detail route
+import { CreateRecipeForm } from '@/components/CreateRecipeForm'
 import { drinkDetailOptions, recipesForDrinkOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -23,6 +24,7 @@ function DrinkDetailRoute() {
   return (
     <article>
       <h1>{drink.name}</h1>
+      <CreateRecipeForm drinkSlug={drink.slug} />
       <section>
         <h2>Recipes</h2>
         {recipes.length === 0 ? (

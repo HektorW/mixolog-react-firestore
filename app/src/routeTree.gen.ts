@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteRouteImport } from './routes/index.route'
+import { Route as DrinksCreateRouteRouteImport } from './routes/drinks.create.route'
 import { Route as DrinksDrinkSlugRouteRouteImport } from './routes/drinks.$drinkSlug.route'
 
 const IndexRouteRoute = IndexRouteRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrinksCreateRouteRoute = DrinksCreateRouteRouteImport.update({
+  id: '/drinks/create',
+  path: '/drinks/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrinksDrinkSlugRouteRoute = DrinksDrinkSlugRouteRouteImport.update({
@@ -26,27 +32,31 @@ const DrinksDrinkSlugRouteRoute = DrinksDrinkSlugRouteRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
+  '/drinks/create': typeof DrinksCreateRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
+  '/drinks/create': typeof DrinksCreateRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRouteRoute
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
+  '/drinks/create': typeof DrinksCreateRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/drinks/$drinkSlug'
+  fullPaths: '/' | '/drinks/$drinkSlug' | '/drinks/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/drinks/$drinkSlug'
-  id: '__root__' | '/' | '/drinks/$drinkSlug'
+  to: '/' | '/drinks/$drinkSlug' | '/drinks/create'
+  id: '__root__' | '/' | '/drinks/$drinkSlug' | '/drinks/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRouteRoute: typeof IndexRouteRoute
   DrinksDrinkSlugRouteRoute: typeof DrinksDrinkSlugRouteRoute
+  DrinksCreateRouteRoute: typeof DrinksCreateRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drinks/create': {
+      id: '/drinks/create'
+      path: '/drinks/create'
+      fullPath: '/drinks/create'
+      preLoaderRoute: typeof DrinksCreateRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drinks/$drinkSlug': {
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRouteRoute: IndexRouteRoute,
   DrinksDrinkSlugRouteRoute: DrinksDrinkSlugRouteRoute,
+  DrinksCreateRouteRoute: DrinksCreateRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,60 +1,75 @@
 // T037 CreateDrinkForm
 import { createDrink } from '@/data/mutations'
-import { normalizeSlug } from '@/data/slug'
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { drinksListOptions } from '@/data/queries'
+import { CreateDrinkSchema } from '@/schemas/drink'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { useFormStatus } from 'react-dom'
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 
 export function CreateDrinkForm() {
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
-  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
-    const v = e.target.value
-    setName(v)
-    if (!slug) setSlug(normalizeSlug(v))
-  }
+  async function action(formData: FormData) {
+    await createDrink(
+      CreateDrinkSchema.parse({
+        name: formData.get('name'),
+        slug: formData.get('slug') || undefined,
+      }),
+    )
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    setPending(true)
-    setError(null)
-    try {
-      await createDrink({ name, slug })
-      setName('')
-      setSlug('')
-    } catch (err) {
-      setError((err as Error).message)
-    } finally {
-      setPending(false)
-    }
+    await queryClient.invalidateQueries(drinksListOptions())
+
+    navigate({ to: '/', viewTransition: true })
   }
 
   return (
-    <form onSubmit={onSubmit} aria-busy={pending}>
-      <fieldset disabled={pending} style={{ border: 'none', padding: 0 }}>
-        <legend>Add Drink</legend>
-        <label>
-          Name
-          <input
-            required
-            maxLength={255}
-            value={name}
-            onChange={handleNameChange}
-          />
-        </label>
-        <label>
-          Slug
-          <input
-            required
-            maxLength={255}
-            value={slug}
-            onChange={(e) => setSlug(normalizeSlug(e.target.value))}
-          />
-        </label>
-        <button type="submit">Create</button>
-        {error && <p>{error}</p>}
-      </fieldset>
-    </form>
+    <ErrorBoundary FallbackComponent={CreateDrinkErrorFallback}>
+      <form action={action}>
+        <FormContent />
+      </form>
+    </ErrorBoundary>
+  )
+}
+
+function FormContent() {
+  const { pending } = useFormStatus()
+
+  return (
+    <fieldset
+      disabled={pending}
+      style={{ border: 'none', padding: 0, opacity: pending ? 0.5 : 1 }}
+    >
+      <legend>Add Drink</legend>
+
+      <label htmlFor="drink-name">Name</label>
+      <input id="drink-name" name="name" required maxLength={255} />
+
+      <label htmlFor="drink-slug">Slug</label>
+      <input
+        id="drink-slug"
+        name="slug"
+        maxLength={255}
+        pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      />
+
+      <button type="submit" disabled={pending}>
+        {pending ? 'Adding…' : 'Add Drink'}
+      </button>
+    </fieldset>
+  )
+}
+
+function CreateDrinkErrorFallback({
+  error,
+  resetErrorBoundary,
+}: FallbackProps) {
+  return (
+    <div role="alert">
+      <p>Failed to create drink:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
   )
 }
