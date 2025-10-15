@@ -1,6 +1,11 @@
 /// <reference types="vite/client" />
 
-// Augment ImportMetaEnv with our required Firebase public config vars
+interface ViteTypeOptions {
+  // By adding this line, you can make the type of ImportMetaEnv strict
+  // to disallow unknown keys.
+  strictImportMetaEnv: unknown
+}
+
 interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY: string
   readonly VITE_FIREBASE_AUTH_DOMAIN: string
