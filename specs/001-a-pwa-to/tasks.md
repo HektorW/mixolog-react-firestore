@@ -20,28 +20,37 @@ Test Strategy (aligning with Constitution Principle 6 Minimal Testing): High‑v
 
 ## Phase 3.2: Selective Tests (Optional Minimal Set)
 Purpose: Align with Constitution Principle 6 (minimal testing). Only critical pure logic and one end‑to‑end smoke path are covered. All other behavior verified manually (see Manual Verification Checklist in Phase 3.5). Tests below are OPTIONAL but recommended.
-- [ ] T010 [P] Unit test slug normalization edge cases `app/tests/unit/slug.test.ts`. (Deps: T007)
-- [ ] T011 [P] Unit test uniqueness logic (drink & recipe slug) `app/tests/unit/uniqueness.test.ts`. (Deps: T007)
-- [ ] T012 [P] Integration smoke: create drink & recipe offline then reconnect (optimistic visibility, offline cache) `app/tests/integration/smoke-offline-create.int.test.ts`. (Deps: T007)
+- [X] T010 [P] Unit test slug normalization edge cases `app/tests/unit/slug.test.ts`. (Deps: T007)
+- [X] T011 [P] Unit test uniqueness logic (drink & recipe slug) `app/tests/unit/uniqueness.test.ts`. (Deps: T007)
+- [X] T012 [P] Integration smoke: create drink & recipe offline then reconnect (optimistic visibility, offline cache) `app/tests/integration/smoke-offline-create.int.test.ts`. (Deps: T007)
 
 Deprecated / Pruned Former Test Tasks: (T009,T013–T023,T057–T068) intentionally removed to keep scope lean. Refer to git history if reactivation needed.
 
 ## Phase 3.3: Core Implementation
 ### Schemas / Models
-- [ ] T024 [P] Implement Drink schema & type in `app/src/schemas/drink.ts` (Zod + inferred TS). (Deps: —)
-- [ ] T025 [P] Implement Ingredient schema & type in `app/src/schemas/ingredient.ts`. (Deps: —)
-- [ ] T026 Implement Recipe schema & type (imports Ingredient) in `app/src/schemas/recipe.ts`. (Deps: T025)
+- [X] T024 [P] Implement Drink schema & type in `app/src/schemas/drink.ts` (Zod + inferred TS). (Deps: —)
+- [X] T025 [P] Implement Ingredient schema & type in `app/src/schemas/ingredient.ts`. (Deps: —)
+- [X] T026 Implement Recipe schema & type (imports Ingredient) in `app/src/schemas/recipe.ts`. (Deps: T025)
 ### Utilities & Data Layer
 - [ ] T027 [P] Implement slug normalization utility in `app/src/data/slug.ts` (make T010 pass). (Deps: T010)
+- [X] T027 [P] Implement slug normalization utility in `app/src/data/slug.ts` (make T010 pass). (Deps: T010)
 - [ ] T028 [P] Firestore init with offline persistence in `app/src/data/firestore.ts`. (Deps: T007)
+- [X] T028 [P] Firestore init with offline persistence in `app/src/data/firestore.ts`. (Deps: T007)
 - [ ] T029 Implement query option factories in `app/src/data/queries.ts` (drink list, drink detail(+recipes), recipes list). (Deps: T024,T026,T028)
 - [ ] T030 Implement uniqueness checks in `app/src/data/uniqueness.ts` (cache first, Firestore fallback) to satisfy T011. (Deps: T027,T028,T024,T026)
 - [ ] T031 Implement create mutations in `app/src/data/mutations.ts` (createDrink, createRecipe) w/ Zod validate + uniqueness. (Deps: T029,T030)
 - [ ] T032 Implement loaders helper `app/src/data/loaders.ts` (primeQuery wrapper). (Deps: T029)
+- [X] T029 Implement query option factories in `app/src/data/queries.ts` (drink list, drink detail(+recipes), recipes list). (Deps: T024,T026,T028)
+- [X] T030 Implement uniqueness checks in `app/src/data/uniqueness.ts` (cache first, Firestore fallback) to satisfy T011. (Deps: T027,T028,T024,T026)
+- [X] T031 Implement create mutations in `app/src/data/mutations.ts` (createDrink, createRecipe) w/ Zod validate + uniqueness. (Deps: T029,T030)
+- [X] T032 Implement loaders helper `app/src/data/loaders.ts` (primeQuery wrapper). (Deps: T029)
 ### Routing
 - [ ] T033 Implement root route `app/src/routes/__root.tsx` (QueryClientProvider, RouterProvider, ErrorBoundary, SuspenseFallback). (Deps: T032)
 - [ ] T034 Implement index route `app/src/routes/index.route.tsx` with loader prefetch of drink list. (Deps: T033)
 - [ ] T035 Implement drink detail route `app/src/routes/drinks.$drinkSlug.route.tsx` prefetching drink + recipes queries. (Deps: T033)
+- [X] T033 Implement root route `app/src/routes/__root.tsx` (QueryClientProvider, RouterProvider, ErrorBoundary, SuspenseFallback). (Deps: T032)
+- [X] T034 Implement index route `app/src/routes/index.route.tsx` with loader prefetch of drink list. (Deps: T033)
+- [X] T035 Implement drink detail route `app/src/routes/drinks.$drinkSlug.route.tsx` prefetching drink + recipes queries. (Deps: T033)
 ### Components
 - [ ] T036 Implement DrinkList component `app/src/components/DrinkList.tsx` (alphabetical, links). (Deps: T034)
 - [ ] T037 Implement CreateDrinkForm `app/src/components/CreateDrinkForm.tsx` (slug auto + editable, native validation). (Deps: T027,T030,T031,T034)
@@ -50,9 +59,16 @@ Deprecated / Pruned Former Test Tasks: (T009,T013–T023,T057–T068) intentiona
 - [ ] T040 Implement optimistic update helpers `app/src/data/optimistic.ts` integrate into mutations (cache insert + rollback). (Deps: T031)
 ### Offline / PWA
 - [ ] T041 Implement service worker caching (app shell + static assets) in `app/src/sw/service-worker.ts` + register in `app/src/sw/register-sw.ts`. (Deps: T008,T033)
+- [X] T037 Implement CreateDrinkForm `app/src/components/CreateDrinkForm.tsx` (slug auto + editable, native validation). (Deps: T027,T030,T031,T034)
+- [X] T040 Implement optimistic update helpers `app/src/data/optimistic.ts` integrate into mutations (cache insert + rollback). (Deps: T031)
+- [X] T041 Implement service worker caching (app shell + static assets) in `app/src/sw/service-worker.ts` + register in `app/src/sw/register-sw.ts`. (Deps: T008,T033)
 ### Error & Suspense Boundaries
 - [ ] T042 [P] Implement ErrorBoundary component `app/src/components/common/ErrorBoundary.tsx`. (Deps: T033)
 - [ ] T043 [P] Implement SuspenseFallback component `app/src/components/common/SuspenseFallback.tsx`. (Deps: T033)
+- [X] T036 Implement DrinkList component `app/src/components/DrinkList.tsx` (alphabetical, links). (Deps: T034)
+- [X] T038 Implement DrinkDetail component `app/src/components/DrinkDetail.tsx` (shows drink + recipes newest-first). (Deps: T035)
+- [X] T042 [P] Implement ErrorBoundary component `app/src/components/common/ErrorBoundary.tsx`. (Deps: T033)
+- [X] T043 [P] Implement SuspenseFallback component `app/src/components/common/SuspenseFallback.tsx`. (Deps: T033)
 ### Wiring
 - [ ] T044 Wire routes & components in `app/src/main.tsx` (providers, service worker registration, route tree). (Deps: T036,T037,T038,T039,T042,T043)
 
