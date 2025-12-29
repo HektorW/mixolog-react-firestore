@@ -6,7 +6,10 @@ import { Link } from '@tanstack/react-router'
 export function DrinkList() {
   const { data: drinks } = useSuspenseQuery(drinksListOptions())
 
-  if (drinks.length === 0) return <p>No drinks yet.</p>
+  if (drinks.length === 0) {
+    return <p>No drinks yet.</p>
+  }
+
   return (
     <ul>
       {drinks.map((d) => (
@@ -23,9 +26,9 @@ export function DrinkList() {
 DrinkList.Skeleton = function DrinkListSkeleton() {
   return (
     <ul>
-      {Array.from({ length: 3 }).map((_, i) => (
+      {Array.from({ length: 3 }).map((_, index) => (
         <li
-          key={i}
+          key={index}
           style={{ background: '#eee', height: 20, margin: '8px 0' }}
         />
       ))}

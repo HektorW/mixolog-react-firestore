@@ -9,16 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteRouteImport } from './routes/index.route'
-import { Route as DrinksCreateRouteRouteImport } from './routes/drinks.create.route'
-import { Route as DrinksDrinkSlugRouteRouteImport } from './routes/drinks.$drinkSlug.route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DrinksCreateRouteImport } from './routes/drinks/create'
+import { Route as DrinksDrinkSlugRouteRouteImport } from './routes/drinks/$drinkSlug/route'
+import { Route as DrinksDrinkSlugIndexRouteImport } from './routes/drinks/$drinkSlug/index'
+import { Route as DrinksDrinkSlugRecipesIndexRouteImport } from './routes/drinks/$drinkSlug/recipes/index'
+import { Route as DrinksDrinkSlugRecipesCreateRouteImport } from './routes/drinks/$drinkSlug/recipes/create'
+import { Route as DrinksDrinkSlugRecipesRecipeSlugRouteImport } from './routes/drinks/$drinkSlug/recipes/$recipeSlug'
 
-const IndexRouteRoute = IndexRouteRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DrinksCreateRouteRoute = DrinksCreateRouteRouteImport.update({
+const DrinksCreateRoute = DrinksCreateRouteImport.update({
   id: '/drinks/create',
   path: '/drinks/create',
   getParentRoute: () => rootRouteImport,
@@ -28,35 +32,90 @@ const DrinksDrinkSlugRouteRoute = DrinksDrinkSlugRouteRouteImport.update({
   path: '/drinks/$drinkSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrinksDrinkSlugIndexRoute = DrinksDrinkSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DrinksDrinkSlugRouteRoute,
+} as any)
+const DrinksDrinkSlugRecipesIndexRoute =
+  DrinksDrinkSlugRecipesIndexRouteImport.update({
+    id: '/recipes/',
+    path: '/recipes/',
+    getParentRoute: () => DrinksDrinkSlugRouteRoute,
+  } as any)
+const DrinksDrinkSlugRecipesCreateRoute =
+  DrinksDrinkSlugRecipesCreateRouteImport.update({
+    id: '/recipes/create',
+    path: '/recipes/create',
+    getParentRoute: () => DrinksDrinkSlugRouteRoute,
+  } as any)
+const DrinksDrinkSlugRecipesRecipeSlugRoute =
+  DrinksDrinkSlugRecipesRecipeSlugRouteImport.update({
+    id: '/recipes/$recipeSlug',
+    path: '/recipes/$recipeSlug',
+    getParentRoute: () => DrinksDrinkSlugRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRouteRoute
-  '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
-  '/drinks/create': typeof DrinksCreateRouteRoute
+  '/': typeof IndexRoute
+  '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRouteWithChildren
+  '/drinks/create': typeof DrinksCreateRoute
+  '/drinks/$drinkSlug/': typeof DrinksDrinkSlugIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
+  '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
+  '/drinks/$drinkSlug/recipes': typeof DrinksDrinkSlugRecipesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRouteRoute
-  '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
-  '/drinks/create': typeof DrinksCreateRouteRoute
+  '/': typeof IndexRoute
+  '/drinks/create': typeof DrinksCreateRoute
+  '/drinks/$drinkSlug': typeof DrinksDrinkSlugIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
+  '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
+  '/drinks/$drinkSlug/recipes': typeof DrinksDrinkSlugRecipesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRouteRoute
-  '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRoute
-  '/drinks/create': typeof DrinksCreateRouteRoute
+  '/': typeof IndexRoute
+  '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRouteWithChildren
+  '/drinks/create': typeof DrinksCreateRoute
+  '/drinks/$drinkSlug/': typeof DrinksDrinkSlugIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
+  '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
+  '/drinks/$drinkSlug/recipes/': typeof DrinksDrinkSlugRecipesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/drinks/$drinkSlug' | '/drinks/create'
+  fullPaths:
+    | '/'
+    | '/drinks/$drinkSlug'
+    | '/drinks/create'
+    | '/drinks/$drinkSlug/'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug'
+    | '/drinks/$drinkSlug/recipes/create'
+    | '/drinks/$drinkSlug/recipes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/drinks/$drinkSlug' | '/drinks/create'
-  id: '__root__' | '/' | '/drinks/$drinkSlug' | '/drinks/create'
+  to:
+    | '/'
+    | '/drinks/create'
+    | '/drinks/$drinkSlug'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug'
+    | '/drinks/$drinkSlug/recipes/create'
+    | '/drinks/$drinkSlug/recipes'
+  id:
+    | '__root__'
+    | '/'
+    | '/drinks/$drinkSlug'
+    | '/drinks/create'
+    | '/drinks/$drinkSlug/'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug'
+    | '/drinks/$drinkSlug/recipes/create'
+    | '/drinks/$drinkSlug/recipes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRouteRoute: typeof IndexRouteRoute
-  DrinksDrinkSlugRouteRoute: typeof DrinksDrinkSlugRouteRoute
-  DrinksCreateRouteRoute: typeof DrinksCreateRouteRoute
+  IndexRoute: typeof IndexRoute
+  DrinksDrinkSlugRouteRoute: typeof DrinksDrinkSlugRouteRouteWithChildren
+  DrinksCreateRoute: typeof DrinksCreateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,14 +124,14 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drinks/create': {
       id: '/drinks/create'
       path: '/drinks/create'
       fullPath: '/drinks/create'
-      preLoaderRoute: typeof DrinksCreateRouteRouteImport
+      preLoaderRoute: typeof DrinksCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drinks/$drinkSlug': {
@@ -82,13 +141,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrinksDrinkSlugRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drinks/$drinkSlug/': {
+      id: '/drinks/$drinkSlug/'
+      path: '/'
+      fullPath: '/drinks/$drinkSlug/'
+      preLoaderRoute: typeof DrinksDrinkSlugIndexRouteImport
+      parentRoute: typeof DrinksDrinkSlugRouteRoute
+    }
+    '/drinks/$drinkSlug/recipes/': {
+      id: '/drinks/$drinkSlug/recipes/'
+      path: '/recipes'
+      fullPath: '/drinks/$drinkSlug/recipes'
+      preLoaderRoute: typeof DrinksDrinkSlugRecipesIndexRouteImport
+      parentRoute: typeof DrinksDrinkSlugRouteRoute
+    }
+    '/drinks/$drinkSlug/recipes/create': {
+      id: '/drinks/$drinkSlug/recipes/create'
+      path: '/recipes/create'
+      fullPath: '/drinks/$drinkSlug/recipes/create'
+      preLoaderRoute: typeof DrinksDrinkSlugRecipesCreateRouteImport
+      parentRoute: typeof DrinksDrinkSlugRouteRoute
+    }
+    '/drinks/$drinkSlug/recipes/$recipeSlug': {
+      id: '/drinks/$drinkSlug/recipes/$recipeSlug'
+      path: '/recipes/$recipeSlug'
+      fullPath: '/drinks/$drinkSlug/recipes/$recipeSlug'
+      preLoaderRoute: typeof DrinksDrinkSlugRecipesRecipeSlugRouteImport
+      parentRoute: typeof DrinksDrinkSlugRouteRoute
+    }
   }
 }
 
+interface DrinksDrinkSlugRouteRouteChildren {
+  DrinksDrinkSlugIndexRoute: typeof DrinksDrinkSlugIndexRoute
+  DrinksDrinkSlugRecipesRecipeSlugRoute: typeof DrinksDrinkSlugRecipesRecipeSlugRoute
+  DrinksDrinkSlugRecipesCreateRoute: typeof DrinksDrinkSlugRecipesCreateRoute
+  DrinksDrinkSlugRecipesIndexRoute: typeof DrinksDrinkSlugRecipesIndexRoute
+}
+
+const DrinksDrinkSlugRouteRouteChildren: DrinksDrinkSlugRouteRouteChildren = {
+  DrinksDrinkSlugIndexRoute: DrinksDrinkSlugIndexRoute,
+  DrinksDrinkSlugRecipesRecipeSlugRoute: DrinksDrinkSlugRecipesRecipeSlugRoute,
+  DrinksDrinkSlugRecipesCreateRoute: DrinksDrinkSlugRecipesCreateRoute,
+  DrinksDrinkSlugRecipesIndexRoute: DrinksDrinkSlugRecipesIndexRoute,
+}
+
+const DrinksDrinkSlugRouteRouteWithChildren =
+  DrinksDrinkSlugRouteRoute._addFileChildren(DrinksDrinkSlugRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRouteRoute: IndexRouteRoute,
-  DrinksDrinkSlugRouteRoute: DrinksDrinkSlugRouteRoute,
-  DrinksCreateRouteRoute: DrinksCreateRouteRoute,
+  IndexRoute: IndexRoute,
+  DrinksDrinkSlugRouteRoute: DrinksDrinkSlugRouteRouteWithChildren,
+  DrinksCreateRoute: DrinksCreateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,3 @@
-// T028 Firestore initialization with offline persistence
-// NOTE: Replace placeholder firebaseConfig with real project config (injected externally or via env)
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
   initializeFirestore,

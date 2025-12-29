@@ -1,169 +1,214 @@
 // T039 CreateRecipeForm component
+// T039 CreateRecipeForm component (refactored to match CreateDrinkForm pattern)
 import { createRecipe } from '@/data/mutations'
-import { normalizeSlug } from '@/data/slug'
+import { recipesForDrinkOptions } from '@/data/queries'
 import type { Ingredient } from '@/schemas/ingredient'
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useFormStatus } from 'react-dom'
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 
 interface Props {
   drinkSlug: string
 }
 
-interface IngredientInput extends Omit<Ingredient, 'unit'> {
-  unit?: string
+export function CreateRecipeForm({ drinkSlug }: Props) {
+  return (
+    <ErrorBoundary FallbackComponent={CreateRecipeErrorFallback}>
+      <CreateRecipeFormInner drinkSlug={drinkSlug} />
+    </ErrorBoundary>
+  )
 }
 
-export function CreateRecipeForm({ drinkSlug }: Props) {
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [instructions, setInstructions] = useState('')
-  const [inspirationUrl, setInspirationUrl] = useState('')
-  const [ingredients, setIngredients] = useState<IngredientInput[]>([
-    { name: '', amount: '', unit: '' },
-  ])
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+function CreateRecipeFormInner({ drinkSlug }: Props) {
+  const queryClient = useQueryClient()
 
-  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
-    const v = e.target.value
-    setName(v)
-    if (!slug) setSlug(normalizeSlug(v))
-  }
-
-  function updateIngredient(
-    idx: number,
-    field: keyof IngredientInput,
-    value: string,
-  ) {
-    setIngredients((prev) =>
-      prev.map((ing, i) => (i === idx ? { ...ing, [field]: value } : ing)),
-    )
-  }
-
-  function addIngredientRow() {
-    setIngredients((prev) => [...prev, { name: '', amount: '', unit: '' }])
-  }
-
-  function removeIngredientRow(idx: number) {
-    setIngredients((prev) => prev.filter((_, i) => i !== idx))
-  }
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    setPending(true)
-    setError(null)
-    try {
-      const filtered = ingredients.filter((i) => i.name.trim())
-      if (filtered.length === 0) {
-        throw new Error('At least one ingredient required')
+  async function action(formData: FormData) {
+    function parseFormEntry(key: string): string | undefined {
+      const value = formData.get(key)
+      if (value === null || value === undefined || value === '') {
+        return undefined
       }
-      await createRecipe({
-        drinkSlug,
-        name,
-        slug,
-        instructions,
-        inspirationUrl: inspirationUrl || undefined,
-        ingredients: filtered.map((i) => ({
-          name: i.name.trim(),
-          amount: i.amount.trim(),
-          unit: i.unit?.trim() || undefined,
-        })),
-      })
-      setName('')
-      setSlug('')
-      setInstructions('')
-      setInspirationUrl('')
-      setIngredients([{ name: '', amount: '', unit: '' }])
-    } catch (err) {
-      setError((err as Error).message)
-    } finally {
-      setPending(false)
+
+      return String(value).trim()
     }
+
+    const name = parseFormEntry('name')
+    if (!name) {
+      throw new Error('Name is required')
+    }
+
+    const instructions = parseFormEntry('instructions')
+    if (!instructions) {
+      throw new Error('Instructions are required')
+    }
+
+    const recipeSlug = parseFormEntry('slug')
+    const inspirationUrl = parseFormEntry('inspirationUrl')
+
+    const ingredientNames = formData
+      .getAll('ingredientName')
+      .map(($) => String($).trim())
+
+    const ingredientAmounts = formData
+      .getAll('ingredientAmount')
+      .map(($) => String($).trim())
+
+    const ingredientUnits = formData
+      .getAll('ingredientUnit')
+      .map(($) => String($).trim())
+
+    const ingredients: Ingredient[] = ingredientNames.map((name, index) => ({
+      name,
+      amount: ingredientAmounts[index] || '',
+      unit: ingredientUnits[index] || undefined,
+    }))
+
+    const filtered = ingredients.filter(($) => $.name)
+
+    await createRecipe({
+      drinkSlug,
+
+      name,
+      slug: recipeSlug,
+      inspirationUrl: inspirationUrl || undefined,
+      instructions,
+      ingredients: filtered,
+    })
+
+    await queryClient.invalidateQueries(recipesForDrinkOptions(drinkSlug))
   }
 
   return (
-    <form onSubmit={onSubmit} aria-busy={pending}>
-      <fieldset disabled={pending} style={{ border: 'none', padding: 0 }}>
-        <legend>Add Recipe</legend>
-        <label>
-          Name
-          <input
-            required
-            maxLength={255}
-            value={name}
-            onChange={handleNameChange}
-          />
-        </label>
-        <label>
-          Slug
-          <input
-            required
-            maxLength={255}
-            value={slug}
-            onChange={(e) => setSlug(normalizeSlug(e.target.value))}
-          />
-        </label>
-        <label>
-          Inspiration URL
-          <input
-            type="url"
-            value={inspirationUrl}
-            onChange={(e) => setInspirationUrl(e.target.value)}
-            placeholder="https://example.com"
-          />
-        </label>
-        <label>
-          Instructions
-          <textarea
-            required
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            rows={4}
-          />
-        </label>
-        <fieldset style={{ border: '1px solid #ccc' }}>
-          <legend>Ingredients</legend>
-          {ingredients.map((ing, idx) => (
-            <div key={idx} style={{ display: 'flex', gap: '0.5rem' }}>
-              <input
-                aria-label={`Ingredient name ${idx + 1}`}
-                placeholder="Name"
-                value={ing.name}
-                onChange={(e) => updateIngredient(idx, 'name', e.target.value)}
-                required
-              />
-              <input
-                aria-label={`Ingredient amount ${idx + 1}`}
-                placeholder="Amount"
-                value={ing.amount}
-                onChange={(e) =>
-                  updateIngredient(idx, 'amount', e.target.value)
-                }
-                required
-              />
-              <input
-                aria-label={`Ingredient unit ${idx + 1}`}
-                placeholder="Unit"
-                value={ing.unit}
-                onChange={(e) => updateIngredient(idx, 'unit', e.target.value)}
-              />
-              {ingredients.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeIngredientRow(idx)}
-                  aria-label={`Remove ingredient ${idx + 1}`}
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          ))}
-          <button type="button" onClick={addIngredientRow}>
-            Add Ingredient
-          </button>
-        </fieldset>
-        <button type="submit">Create Recipe</button>
-        {error && <p>{error}</p>}
-      </fieldset>
+    <form action={action}>
+      <FormContent />
     </form>
+  )
+}
+
+function FormContent() {
+  const { pending } = useFormStatus()
+  const [ingredientIdList, setIngredientIdList] = useState<number[]>([0])
+
+  function addRow() {
+    setIngredientIdList((_ingredientIdList) => [
+      ..._ingredientIdList,
+      Date.now(),
+    ])
+  }
+
+  function removeRow(id: number) {
+    setIngredientIdList((_ingredientIdList) =>
+      _ingredientIdList.filter(($) => $ !== id),
+    )
+  }
+
+  return (
+    <fieldset disabled={pending} style={{ opacity: pending ? 0.5 : 1 }}>
+      <legend>Add Recipe</legend>
+
+      <div>
+        <label htmlFor="recipe-name">Name</label>
+        <input
+          id="recipe-name"
+          name="name"
+          required
+          maxLength={255}
+          autoFocus
+        />
+      </div>
+
+      <div>
+        <label htmlFor="recipe-slug">Slug</label>
+        <input
+          id="recipe-slug"
+          name="slug"
+          maxLength={255}
+          pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="recipe-inspiration-url">Inspiration URL</label>
+        <input
+          id="recipe-inspiration-url"
+          name="inspirationUrl"
+          type="url"
+          placeholder="https://example.com"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="recipe-instructions">Instructions</label>
+        <textarea
+          id="recipe-instructions"
+          name="instructions"
+          required
+          style={{
+            fieldSizing: 'content',
+            minHeight: '4lh',
+            width: '60ch',
+            resize: 'vertical',
+          }}
+        />
+      </div>
+
+      <fieldset>
+        <legend>Ingredients</legend>
+
+        {ingredientIdList.map((id, idx) => (
+          <div key={id} style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              aria-label={`Ingredient name ${idx + 1}`}
+              placeholder="Name"
+              name="ingredientName"
+              required={idx === 0}
+              autoFocus
+            />
+            <input
+              aria-label={`Ingredient amount ${idx + 1}`}
+              placeholder="Amount"
+              name="ingredientAmount"
+              required={idx === 0}
+            />
+            <input
+              aria-label={`Ingredient unit ${idx + 1}`}
+              placeholder="Unit"
+              name="ingredientUnit"
+            />
+            {ingredientIdList.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeRow(id)}
+                aria-label={`Remove ingredient ${idx + 1}`}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+
+        <button type="button" onClick={addRow}>
+          Add Ingredient
+        </button>
+      </fieldset>
+
+      <button type="submit" disabled={pending}>
+        {pending ? 'Creating…' : 'Create Recipe'}
+      </button>
+    </fieldset>
+  )
+}
+
+function CreateRecipeErrorFallback({
+  error,
+  resetErrorBoundary,
+}: FallbackProps) {
+  return (
+    <div role="alert">
+      <p>Failed to create recipe:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
   )
 }

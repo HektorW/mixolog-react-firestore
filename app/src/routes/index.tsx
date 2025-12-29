@@ -18,11 +18,11 @@ function IndexComponent() {
     <main>
       <h1>Drinks</h1>
 
+      <Link to="/drinks/create">Add drink</Link>
+
       <Suspense fallback={<DrinkList.Skeleton />}>
         <DrinkList />
       </Suspense>
-
-      <Link to="/drinks/create">Add drink</Link>
     </main>
   )
 }

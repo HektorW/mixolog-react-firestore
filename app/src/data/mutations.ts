@@ -18,9 +18,7 @@ interface CreateRecipeInput {
 
 export async function createDrink(input: CreateDrink): Promise<Drink> {
   const name = input.name.trim()
-
-  let slug = (input.slug ?? normalizeSlug(name)).trim()
-  slug = normalizeSlug(slug)
+  const slug = normalizeSlug(input.slug || name)
 
   if (!(await checkDrinkSlugUnique(slug))) {
     throw new Error('Duplicate drink slug or name')
@@ -28,11 +26,11 @@ export async function createDrink(input: CreateDrink): Promise<Drink> {
 
   const db = await getDb()
 
-  const ref = doc(db, 'drinks', slug)
+  const docReference = doc(db, 'drinks', slug)
   const toWrite = { name, createdAt: serverTimestamp() } as const
 
-  await setDoc(ref, toWrite)
-  // Re-read shape locally (createdAt serverTimestamp resolves later, so we set Date now fallback)
+  await setDoc(docReference, toWrite)
+
   return DrinkSchema.parse({ ...toWrite, createdAt: new Date(), slug })
 }
 
@@ -47,7 +45,7 @@ export async function createRecipe(input: CreateRecipeInput): Promise<Recipe> {
   }
 
   const db = await getDb()
-  const ref = doc(db, 'drinks', input.drinkSlug, 'recipes', slug)
+  const docReference = doc(db, 'drinks', input.drinkSlug, 'recipes', slug)
 
   const toWrite = {
     name,
@@ -58,7 +56,7 @@ export async function createRecipe(input: CreateRecipeInput): Promise<Recipe> {
     drinkSlug: input.drinkSlug,
   } as const
 
-  await setDoc(ref, toWrite)
+  await setDoc(docReference, toWrite)
 
   return RecipeSchema.parse({ ...toWrite, createdAt: new Date(), slug })
 }

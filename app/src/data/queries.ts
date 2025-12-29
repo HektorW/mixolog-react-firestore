@@ -1,5 +1,3 @@
-// T029 Query option factories for TanStack Query
-import { RecipeSchema } from '@/schemas/recipe'
 import {
   collection,
   doc,
@@ -8,11 +6,8 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore'
-import {
-  parseSnapshotToDrink,
-  safeParseSnapshotToDrinkList,
-  toSortedDrinkList,
-} from './drinks'
+import { drinkConverter, recipeConverter } from './converters'
+import { toSortedDrinkList } from './drinks'
 import { getDb } from './firestore'
 
 export function drinksListOptions() {
@@ -20,11 +15,18 @@ export function drinksListOptions() {
     queryKey: ['drinks'],
     queryFn: async () => {
       const db = await getDb()
-      const col = collection(db, 'drinks')
-      const q = query(col, orderBy('name'))
-      const snap = await getDocs(q)
 
-      const drinkList = safeParseSnapshotToDrinkList(snap)
+      const collectionReference = collection(db, 'drinks').withConverter(
+        drinkConverter,
+      )
+
+      const collectionQuery = query(collectionReference, orderBy('name'))
+
+      const querySnapshot = await getDocs(collectionQuery)
+
+      const drinkList = querySnapshot.docs.map((queryDocSnapshot) =>
+        queryDocSnapshot.data(),
+      )
 
       return toSortedDrinkList(drinkList)
     },
@@ -37,14 +39,16 @@ export function drinkDetailOptions(drinkSlug: string) {
     queryFn: async () => {
       const db = await getDb()
 
-      const ref = doc(db, 'drinks', drinkSlug)
+      const docReference = doc(db, 'drinks', drinkSlug).withConverter(
+        drinkConverter,
+      )
 
-      const snap = await getDoc(ref)
-      if (!snap.exists()) {
+      const docSnapshot = await getDoc(docReference)
+      if (!docSnapshot.exists()) {
         throw new Error('Not found')
       }
 
-      return parseSnapshotToDrink(snap)
+      return docSnapshot.data()
     },
   }
 }
@@ -54,13 +58,49 @@ export function recipesForDrinkOptions(drinkSlug: string) {
     queryKey: ['recipes', drinkSlug],
     queryFn: async () => {
       const db = await getDb()
-      const col = collection(db, 'drinks', drinkSlug, 'recipes')
-      // Newest first ordering ensured by Firestore query (T045)
-      const q = query(col, orderBy('createdAt', 'desc'))
-      const snap = await getDocs(q)
-      return snap.docs.map((d) =>
-        RecipeSchema.parse({ ...d.data(), slug: d.id }),
+
+      const collectionReference = collection(
+        db,
+        'drinks',
+        drinkSlug,
+        'recipes',
+      ).withConverter(recipeConverter)
+
+      const collectionQuery = query(
+        collectionReference,
+        orderBy('createdAt', 'desc'),
       )
+
+      const querySnapshot = await getDocs(collectionQuery)
+
+      return querySnapshot.docs.map((queryDocSnapshot) =>
+        queryDocSnapshot.data(),
+      )
+    },
+  }
+}
+
+export function recipeDetailOptions(drinkSlug: string, recipeSlug: string) {
+  return {
+    queryKey: ['recipe', drinkSlug, recipeSlug],
+    queryFn: async () => {
+      const db = await getDb()
+
+      const docReference = doc(
+        db,
+        'drinks',
+        drinkSlug,
+        'recipes',
+        recipeSlug,
+      ).withConverter(recipeConverter)
+
+      const docSnapshot = await getDoc(docReference)
+
+      if (!docSnapshot.exists()) {
+        throw new Error('Not found')
+      }
+
+      return docSnapshot.data()
     },
   }
 }
