@@ -1,5 +1,6 @@
 import { recipeDetailOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { Glimmer } from './common/Glimmer'
 
 interface RecipeDetailsProps {
   drinkSlug: string
@@ -51,43 +52,24 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
 RecipeDetails.Skeleton = function RecipeDetailsSkeleton() {
   return (
     <article>
-      <div
-        style={{
-          background: '#eee',
-          height: 30,
-          width: '50%',
-          margin: '16px 0',
-        }}
-      />
+      <Glimmer as="h2" />
 
       <h3>Ingredients</h3>
       <ul>
         {Array.from({ length: 3 }).map((_, index) => (
-          <li
-            key={index}
-            style={{ background: '#eee', height: 20, margin: '8px 0' }}
-          />
+          <Glimmer key={index} as="li" />
         ))}
       </ul>
 
       <h3>Instructions</h3>
-      <div
+      <Glimmer
         style={{
-          background: '#eee',
-          height: 100,
-          width: '100%',
-          margin: '16px 0',
+          height: '4lh',
+          width: '60ch',
         }}
       />
 
-      <div
-        style={{
-          background: '#eee',
-          height: 20,
-          width: '80%',
-          margin: '16px 0',
-        }}
-      />
+      <Glimmer />
     </article>
   )
 }

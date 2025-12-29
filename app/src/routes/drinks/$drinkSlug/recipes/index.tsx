@@ -1,6 +1,6 @@
-import { recipesForDrinkOptions } from '@/data/queries'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { RecipeList } from '@/components/RecipeList'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { Suspense } from 'react'
 
 export const Route = createFileRoute('/drinks/$drinkSlug/recipes/')({
   component: RouteComponent,
@@ -8,13 +8,14 @@ export const Route = createFileRoute('/drinks/$drinkSlug/recipes/')({
 
 function RouteComponent() {
   const { drinkSlug } = Route.useParams()
-  const { data: recipes } = useSuspenseQuery(recipesForDrinkOptions(drinkSlug))
 
   return (
-    <ul>
-      {recipes.map((recipe) => (
-        <li key={recipe.slug}>{recipe.name}</li>
-      ))}
-    </ul>
+    <>
+      <Link to="..">Back to drink</Link>
+
+      <Suspense fallback={<RecipeList.Skeleton />}>
+        <RecipeList drinkSlug={drinkSlug} />
+      </Suspense>
+    </>
   )
 }

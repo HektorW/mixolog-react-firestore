@@ -1,0 +1,29 @@
+dialog {
+  &::backdrop {
+    background: none;
+  }
+}
+
+::view-transition-new(dialog-content-hegge) {
+  animation-name: dialog-content-slide-up;
+}
+
+::view-transition-old(dialog-content-hegge) {
+  animation-name: dialog-content-slide-down;
+}
+
+@keyframes dialog-content-slide-up {
+  from {
+    scale: 0.5;
+    translate: 0 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-content-slide-down {
+  to {
+    scale: 0.5;
+    translate: 0 100%;
+    opacity: 0;
+  }
+}

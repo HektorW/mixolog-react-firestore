@@ -2,6 +2,7 @@
 import { drinksListOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { Glimmer } from './common/Glimmer'
 
 export function DrinkList() {
   const { data: drinks } = useSuspenseQuery(drinksListOptions())
@@ -27,10 +28,7 @@ DrinkList.Skeleton = function DrinkListSkeleton() {
   return (
     <ul>
       {Array.from({ length: 3 }).map((_, index) => (
-        <li
-          key={index}
-          style={{ background: '#eee', height: 20, margin: '8px 0' }}
-        />
+        <Glimmer key={index} as="li" />
       ))}
     </ul>
   )

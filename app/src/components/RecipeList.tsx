@@ -1,6 +1,7 @@
 import { recipesForDrinkOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { Glimmer } from './common/Glimmer'
 
 interface RecipeListProps {
   drinkSlug: string
@@ -47,10 +48,7 @@ RecipeList.Skeleton = function RecipeListSkeleton() {
   return (
     <ul>
       {Array.from({ length: 3 }).map((_, index) => (
-        <li
-          key={index}
-          style={{ background: '#eee', height: 20, margin: '8px 0' }}
-        />
+        <Glimmer key={index} as="li" />
       ))}
     </ul>
   )
