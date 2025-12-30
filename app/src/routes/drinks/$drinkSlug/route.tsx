@@ -1,5 +1,6 @@
 import { Glimmer } from '@/components/common/Glimmer'
 import { drinkDetailOptions, recipesForDrinkOptions } from '@/data/queries'
+import { PageTitle } from '@/design/components/page-title'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { Suspense } from 'react'
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/drinks/$drinkSlug')({
 function RouteComponent() {
   return (
     <>
-      <Suspense fallback={<Glimmer as="h1" />}>
+      <Suspense fallback={<Glimmer as={PageTitle} />}>
         <DrinkName />
       </Suspense>
 
@@ -31,5 +32,5 @@ function DrinkName() {
   const { drinkSlug } = Route.useParams()
   const { data: drink } = useSuspenseQuery(drinkDetailOptions(drinkSlug))
 
-  return <h1>{drink.name}</h1>
+  return <PageTitle>{drink.name}</PageTitle>
 }

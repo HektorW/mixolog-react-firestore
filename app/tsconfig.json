@@ -26,9 +26,10 @@
 
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@styled/*": ["../styled-system/*"]
     }
   },
 
-  "include": ["src"]
+  "include": ["src", "../styled-system"]
 }

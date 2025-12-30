@@ -63,7 +63,7 @@ RecipeDetails.Skeleton = function RecipeDetailsSkeleton() {
 
       <h3>Instructions</h3>
       <Glimmer
-        style={{
+        css={{
           height: '4lh',
           width: '60ch',
         }}

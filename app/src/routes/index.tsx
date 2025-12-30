@@ -1,7 +1,8 @@
-// T034 index route listing drinks
 import { DrinkList } from '@/components/DrinkList'
 import { drinksListOptions } from '@/data/queries'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { CreateLink } from '@/design/components/create-link'
+import { PageTitle } from '@/design/components/page-title'
+import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 
 export const Route = createFileRoute('/')({
@@ -16,9 +17,9 @@ export const Route = createFileRoute('/')({
 function IndexComponent() {
   return (
     <main>
-      <h1>Drinks</h1>
+      <PageTitle children="Drinks" />
 
-      <Link to="/drinks/create">Add drink</Link>
+      <CreateLink to="/drinks/create">Add drink</CreateLink>
 
       <Suspense fallback={<DrinkList.Skeleton />}>
         <DrinkList />

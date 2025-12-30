@@ -1,3 +1,4 @@
+import { BackLink } from '@/design/components/back-link'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/drinks/$drinkSlug/')({
@@ -9,7 +10,7 @@ function DrinkDetailRoute() {
 
   return (
     <>
-      <Link to="/">Back to all drinks</Link>
+      <BackLink to="/">Back to all drinks</BackLink>
 
       <Link to="/drinks/$drinkSlug/recipes" params={{ drinkSlug }}>
         View Recipes
