@@ -16,7 +16,7 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
     <article>
       <h2>{recipe.name}</h2>
 
-      <h3>Ingredients</h3>
+      <h3>Ingredienser</h3>
       <ul>
         {recipe.ingredients.map((ingredient, index) => (
           <li key={index}>
@@ -25,7 +25,7 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
         ))}
       </ul>
 
-      <h3>Instructions</h3>
+      <h3>Instruktioner</h3>
       <textarea
         readOnly
         value={recipe.instructions}
@@ -54,14 +54,14 @@ RecipeDetails.Skeleton = function RecipeDetailsSkeleton() {
     <article>
       <Glimmer as="h2" />
 
-      <h3>Ingredients</h3>
+      <h3>Ingredienser</h3>
       <ul>
         {Array.from({ length: 3 }).map((_, index) => (
           <Glimmer key={index} as="li" />
         ))}
       </ul>
 
-      <h3>Instructions</h3>
+      <h3>Instruktioner</h3>
       <Glimmer
         css={{
           height: '4lh',

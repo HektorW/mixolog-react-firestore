@@ -1,7 +1,8 @@
 import { CreateRecipeForm } from '@/components/CreateRecipeForm'
+import { Page } from '@/components/page'
 import { drinkDetailOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/drinks/$drinkSlug/recipes/create')({
   component: RouteComponent,
@@ -13,8 +14,18 @@ function RouteComponent() {
 
   return (
     <>
-      <Link to="..">Back to recipes</Link>
-      <CreateRecipeForm drinkSlug={drink.slug} />
+      <Page.Header
+        title={`Nytt recept för ${drink.name}`}
+        backLink={{
+          to: '/drinks/$drinkSlug/recipes',
+          params: { drinkSlug },
+          text: 'Tillbaka till recept',
+        }}
+      />
+
+      <Page.Main>
+        <CreateRecipeForm drinkSlug={drink.slug} />
+      </Page.Main>
     </>
   )
 }

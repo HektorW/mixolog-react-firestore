@@ -1,7 +1,16 @@
-import { BackLink } from '@/design/components/back-link'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { DrinkName } from '@/components/drink-name'
+import { Page } from '@/components/page'
+import { buttonLink } from '@/design/recipes/buttons'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/drinks/$drinkSlug/')({
+  loader: ({ params }) => {
+    throw redirect({
+      to: '/drinks/$drinkSlug/recipes',
+      params: { drinkSlug: params.drinkSlug },
+    })
+  },
+
   component: DrinkDetailRoute,
 })
 
@@ -10,11 +19,20 @@ function DrinkDetailRoute() {
 
   return (
     <>
-      <BackLink to="/">Back to all drinks</BackLink>
+      <Page.Header
+        title={<DrinkName slug={drinkSlug} />}
+        backLink={{ to: '/', text: 'Tillbaka till alla drinkar' }}
+      />
 
-      <Link to="/drinks/$drinkSlug/recipes" params={{ drinkSlug }}>
-        View Recipes
-      </Link>
+      <Page.Main>
+        <Link
+          to="/drinks/$drinkSlug/recipes/create"
+          params={{ drinkSlug }}
+          className={buttonLink().link}
+        >
+          Inga recept ännu. Lägg till ett.
+        </Link>
+      </Page.Main>
     </>
   )
 }

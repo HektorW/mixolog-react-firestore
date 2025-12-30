@@ -1,4 +1,3 @@
-// T041 register service worker (later wired in main.tsx)
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

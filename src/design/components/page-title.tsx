@@ -8,17 +8,6 @@ interface PageTitleProps {
 
 export function PageTitle({ children, className }: PageTitleProps) {
   return (
-    <h1
-      className={cx(
-        css({
-          fontSize: '2xl',
-          fontWeight: 'bold',
-          marginBottom: '4',
-        }),
-        className,
-      )}
-    >
-      {children}
-    </h1>
+    <h1 className={cx(css({ textStyle: '5xl' }), className)}>{children}</h1>
   )
 }

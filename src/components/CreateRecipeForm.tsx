@@ -2,8 +2,15 @@
 // T039 CreateRecipeForm component (refactored to match CreateDrinkForm pattern)
 import { createRecipe } from '@/data/mutations'
 import { recipesForDrinkOptions } from '@/data/queries'
+import { IconCross } from '@/design/icons/cross'
+import { IconPlus } from '@/design/icons/plus'
+import { button } from '@/design/recipes/buttons'
+import { formLayout, input, submit } from '@/design/recipes/form'
 import type { Ingredient } from '@/schemas/ingredient'
+import { css, cx } from '@styled/css'
+import { hstack } from '@styled/patterns'
 import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
@@ -22,6 +29,7 @@ export function CreateRecipeForm({ drinkSlug }: Props) {
 
 function CreateRecipeFormInner({ drinkSlug }: Props) {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   async function action(formData: FormData) {
     function parseFormEntry(key: string): string | undefined {
@@ -66,7 +74,7 @@ function CreateRecipeFormInner({ drinkSlug }: Props) {
 
     const filtered = ingredients.filter(($) => $.name)
 
-    await createRecipe({
+    const recipe = await createRecipe({
       drinkSlug,
 
       name,
@@ -77,6 +85,11 @@ function CreateRecipeFormInner({ drinkSlug }: Props) {
     })
 
     await queryClient.invalidateQueries(recipesForDrinkOptions(drinkSlug))
+
+    navigate({
+      to: '/drinks/$drinkSlug/recipes/$recipeSlug',
+      params: { drinkSlug, recipeSlug: recipe.slug },
+    })
   }
 
   return (
@@ -104,17 +117,16 @@ function FormContent() {
   }
 
   return (
-    <fieldset disabled={pending} style={{ opacity: pending ? 0.5 : 1 }}>
-      <legend>Add Recipe</legend>
-
+    <div className={formLayout()}>
       <div>
-        <label htmlFor="recipe-name">Name</label>
+        <label htmlFor="recipe-name">Namn</label>
         <input
           id="recipe-name"
           name="name"
           required
           maxLength={255}
           autoFocus
+          className={input()}
         />
       </div>
 
@@ -125,78 +137,94 @@ function FormContent() {
           name="slug"
           maxLength={255}
           pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          className={input()}
         />
       </div>
 
       <div>
-        <label htmlFor="recipe-inspiration-url">Inspiration URL</label>
+        <label htmlFor="recipe-inspiration-url">Inspirations URL</label>
         <input
           id="recipe-inspiration-url"
           name="inspirationUrl"
           type="url"
           placeholder="https://example.com"
+          className={input()}
         />
       </div>
 
       <div>
-        <label htmlFor="recipe-instructions">Instructions</label>
+        <label htmlFor="recipe-instructions">Instruktioner</label>
         <textarea
           id="recipe-instructions"
           name="instructions"
           required
-          style={{
-            fieldSizing: 'content',
-            minHeight: '4lh',
-            width: '60ch',
-            resize: 'vertical',
-          }}
+          className={cx(
+            input(),
+            css({
+              minHeight: '6lh',
+              width: '60ch',
+              resize: 'vertical',
+              fieldSizing: 'content',
+            }),
+          )}
         />
       </div>
 
       <fieldset>
-        <legend>Ingredients</legend>
+        <legend>Ingredienser</legend>
 
         {ingredientIdList.map((id, idx) => (
-          <div key={id} style={{ display: 'flex', gap: '0.5rem' }}>
+          <div key={id} className={hstack({ gap: '4' })}>
             <input
               aria-label={`Ingredient name ${idx + 1}`}
-              placeholder="Name"
+              placeholder="Namn"
               name="ingredientName"
               required={idx === 0}
               autoFocus
+              className={input()}
             />
             <input
               aria-label={`Ingredient amount ${idx + 1}`}
-              placeholder="Amount"
+              placeholder="Mängd"
               name="ingredientAmount"
               required={idx === 0}
+              className={input()}
             />
             <input
               aria-label={`Ingredient unit ${idx + 1}`}
-              placeholder="Unit"
+              placeholder="Enhet"
               name="ingredientUnit"
+              className={input()}
             />
             {ingredientIdList.length > 1 && (
               <button
                 type="button"
-                onClick={() => removeRow(id)}
                 aria-label={`Remove ingredient ${idx + 1}`}
+                className={button({ size: 'sm' }).button}
+                onClick={() => removeRow(id)}
               >
-                ✕
+                <IconCross className={button({ size: 'sm' }).icon} />
               </button>
             )}
           </div>
         ))}
 
-        <button type="button" onClick={addRow}>
-          Add Ingredient
+        <button
+          type="button"
+          className={button({ size: 'sm' }).button}
+          onClick={addRow}
+        >
+          <span className={button({ size: 'sm' }).text}>
+            Lägg till ingrediens
+          </span>
+          <IconPlus className={button({ size: 'sm' }).icon} />
         </button>
       </fieldset>
 
-      <button type="submit" disabled={pending}>
-        {pending ? 'Creating…' : 'Create Recipe'}
+      <button type="submit" disabled={pending} className={submit({ pending })}>
+        {pending ? 'Skapar…' : 'Spara recept'}
       </button>
-    </fieldset>
+    </div>
   )
 }
 
@@ -208,7 +236,9 @@ function CreateRecipeErrorFallback({
     <div role="alert">
       <p>Failed to create recipe:</p>
       <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
+      <button className={button().button} onClick={resetErrorBoundary}>
+        Try again
+      </button>
     </div>
   )
 }

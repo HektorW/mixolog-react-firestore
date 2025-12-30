@@ -1,4 +1,3 @@
-// T044 wiring application root with TanStack Router
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { createRoot } from 'react-dom/client'
@@ -9,7 +8,7 @@ const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
   context: { queryClient },
-  defaultPreloadStaleTime: 0,
+  defaultPreload: 'intent',
   scrollRestoration: true,
 })
 

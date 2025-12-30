@@ -12,8 +12,8 @@ export const Route = createRootRouteWithContext<{
 }>()({
   notFoundComponent: () => (
     <div>
-      <h1>404 - Not Found</h1>
-      <Link to="/">Go Home</Link>
+      <h1>404 - Inget hittades</h1>
+      <Link to="/">Gå hem</Link>
     </div>
   ),
   component: () => <Outlet />,

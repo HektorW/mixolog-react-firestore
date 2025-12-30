@@ -13,7 +13,7 @@
     "typescript",
     "typescriptreact"
   ],
-  "typescript.tsdk": "app/node_modules/typescript/lib",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "search.exclude": {
     "**/dist": true,
     "**/node_modules": true
@@ -21,5 +21,5 @@
   "files.exclude": {
     "**/.DS_Store": true
   },
-  "prettier.configPath": "app/.prettierrc"
+  "prettier.configPath": ".prettierrc"
 }

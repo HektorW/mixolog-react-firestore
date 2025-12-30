@@ -50,13 +50,26 @@ export async function createRecipe(input: CreateRecipeInput): Promise<Recipe> {
   const toWrite = {
     name,
     instructions: input.instructions.trim(),
-    ingredients: input.ingredients,
-    inspirationUrl: input.inspirationUrl?.trim() || undefined,
+    ingredients: input.ingredients.map(($) => removeUndefinedFields($)),
+    inspirationUrl: input.inspirationUrl?.trim(),
     createdAt: serverTimestamp(),
     drinkSlug: input.drinkSlug,
   } as const
 
-  await setDoc(docReference, toWrite)
+  await setDoc(docReference, removeUndefinedFields(toWrite))
 
   return RecipeSchema.parse({ ...toWrite, createdAt: new Date(), slug })
+}
+
+function removeUndefinedFields<T>(obj: T): Partial<T> {
+  const result: Partial<T> = {}
+
+  for (const key in obj) {
+    const value = obj[key]
+    if (value !== undefined) {
+      result[key] = value
+    }
+  }
+
+  return result
 }

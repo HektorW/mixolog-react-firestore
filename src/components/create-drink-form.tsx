@@ -1,6 +1,7 @@
 // T037 CreateDrinkForm
 import { createDrink } from '@/data/mutations'
 import { drinksListOptions } from '@/data/queries'
+import { formLayout, input, submit } from '@/design/recipes/form'
 import { CreateDrinkSchema } from '@/schemas/drink'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -21,7 +22,7 @@ export function CreateDrinkForm() {
 
     await queryClient.invalidateQueries(drinksListOptions())
 
-    navigate({ to: '/', viewTransition: true })
+    navigate({ to: '/' })
   }
 
   return (
@@ -37,27 +38,33 @@ function FormContent() {
   const { pending } = useFormStatus()
 
   return (
-    <fieldset
-      disabled={pending}
-      style={{ border: 'none', padding: 0, opacity: pending ? 0.5 : 1 }}
-    >
-      <legend>Add Drink</legend>
+    <div className={formLayout()}>
+      <div>
+        <label htmlFor="drink-name">Namn</label>
+        <input
+          id="drink-name"
+          name="name"
+          required
+          maxLength={255}
+          className={input()}
+        />
+      </div>
 
-      <label htmlFor="drink-name">Name</label>
-      <input id="drink-name" name="name" required maxLength={255} />
+      <div>
+        <label htmlFor="drink-slug">Slug</label>
+        <input
+          id="drink-slug"
+          name="slug"
+          maxLength={255}
+          pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          className={input()}
+        />
+      </div>
 
-      <label htmlFor="drink-slug">Slug</label>
-      <input
-        id="drink-slug"
-        name="slug"
-        maxLength={255}
-        pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
-      />
-
-      <button type="submit" disabled={pending}>
-        {pending ? 'Adding…' : 'Add Drink'}
+      <button type="submit" disabled={pending} className={submit({ pending })}>
+        {pending ? 'Lägger till…' : 'Lägg till drink'}
       </button>
-    </fieldset>
+    </div>
   )
 }
 

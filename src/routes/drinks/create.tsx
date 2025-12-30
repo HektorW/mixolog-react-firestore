@@ -1,6 +1,5 @@
-import { CreateDrinkForm } from '@/components/CreateDrinkForm'
-import { BackLink } from '@/design/components/back-link'
-import { PageTitle } from '@/design/components/page-title'
+import { CreateDrinkForm } from '@/components/create-drink-form'
+import { Page } from '@/components/page'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/drinks/create')({
@@ -10,9 +9,17 @@ export const Route = createFileRoute('/drinks/create')({
 function RouteComponent() {
   return (
     <>
-      <PageTitle children="New drink" />
-      <BackLink to="/">Back to drinks</BackLink>
-      <CreateDrinkForm />
+      <Page.Header
+        title="Ny drink"
+        backLink={{
+          text: 'Tillbaka till drinkar',
+          to: '/',
+        }}
+      />
+
+      <Page.Main>
+        <CreateDrinkForm />
+      </Page.Main>
     </>
   )
 }

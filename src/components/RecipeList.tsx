@@ -1,4 +1,5 @@
 import { recipesForDrinkOptions } from '@/data/queries'
+import { CreateLink } from '@/design/components/create-link'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { Glimmer } from './common/Glimmer'
@@ -13,20 +14,20 @@ export function RecipeList({ drinkSlug }: RecipeListProps) {
   if (recipes.length === 0) {
     return (
       <>
-        <p>No recipes yet.</p>
+        <p>Inga recept än.</p>
 
-        <Link to="/drinks/$drinkSlug/recipes/create" params={{ drinkSlug }}>
-          Add the first recipe!
-        </Link>
+        <CreateLink to="/drinks/$drinkSlug/recipes/create" params={{ drinkSlug }}>
+          Lägg till det första receptet!
+        </CreateLink>
       </>
     )
   }
 
   return (
     <>
-      <Link to="/drinks/$drinkSlug/recipes/create" params={{ drinkSlug }}>
-        Add new Recipe
-      </Link>
+      <CreateLink to="/drinks/$drinkSlug/recipes/create" params={{ drinkSlug }}>
+        Lägg till nytt recept
+      </CreateLink>
 
       <ul>
         {recipes.map((recipe) => (

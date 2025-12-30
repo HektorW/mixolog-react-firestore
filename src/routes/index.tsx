@@ -1,7 +1,6 @@
 import { DrinkList } from '@/components/DrinkList'
+import { Page } from '@/components/page'
 import { drinksListOptions } from '@/data/queries'
-import { CreateLink } from '@/design/components/create-link'
-import { PageTitle } from '@/design/components/page-title'
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 
@@ -11,19 +10,25 @@ export const Route = createFileRoute('/')({
   },
 
   component: IndexComponent,
-  pendingComponent: () => <div>Loading drinks route...</div>,
+  pendingComponent: () => <div>Laddar drinkar...</div>,
 })
 
 function IndexComponent() {
   return (
-    <main>
-      <PageTitle children="Drinks" />
+    <>
+      <Page.Header
+        title="Driiiinkar"
+        createLink={{
+          to: '/drinks/create',
+          text: 'Ny drink',
+        }}
+      />
 
-      <CreateLink to="/drinks/create">Add drink</CreateLink>
-
-      <Suspense fallback={<DrinkList.Skeleton />}>
-        <DrinkList />
-      </Suspense>
-    </main>
+      <Page.Main>
+        <Suspense fallback={<DrinkList.Skeleton />}>
+          <DrinkList />
+        </Suspense>
+      </Page.Main>
+    </>
   )
 }
