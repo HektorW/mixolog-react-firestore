@@ -1,5 +1,12 @@
 @layer reset, base, tokens, recipes, utilities;
 
+@layer base {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
 dialog {
   &::backdrop {
     background: none;

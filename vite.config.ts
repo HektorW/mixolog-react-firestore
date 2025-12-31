@@ -5,7 +5,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   plugins: [
-    tanstackRouter(),
+    tanstackRouter({
+      autoCodeSplitting: true,
+    }),
     react({
       babel: { plugins: ['react-compiler'] },
     }),

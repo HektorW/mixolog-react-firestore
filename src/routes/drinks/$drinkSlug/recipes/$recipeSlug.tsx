@@ -1,5 +1,6 @@
-import { RecipeDetails } from '@/components/RecipeDetails'
-import { BackLink } from '@/design/components/back-link'
+import { DrinkName } from '@/components/drink-name'
+import { Page } from '@/components/page'
+import { RecipeDetails } from '@/components/recipe-details'
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense, ViewTransition } from 'react'
 
@@ -12,13 +13,25 @@ function RouteComponent() {
 
   return (
     <>
-      <BackLink to="..">Tillbaka till alla recept</BackLink>
+      <Page.Header
+        title={
+          <>
+            <DrinkName slug={drinkSlug} />
+          </>
+        }
+        backLink={{
+          to: '..',
+          text: 'Tillbaka till alla recept',
+        }}
+      />
 
-      <ViewTransition>
-        <Suspense fallback={<RecipeDetails.Skeleton />}>
-          <RecipeDetails drinkSlug={drinkSlug} recipeSlug={recipeSlug} />
-        </Suspense>
-      </ViewTransition>
+      <Page.Main>
+        <ViewTransition>
+          <Suspense fallback={<RecipeDetails.Skeleton />}>
+            <RecipeDetails drinkSlug={drinkSlug} recipeSlug={recipeSlug} />
+          </Suspense>
+        </ViewTransition>
+      </Page.Main>
     </>
   )
 }

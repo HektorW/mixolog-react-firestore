@@ -8,10 +8,10 @@ export const buttonLink = sva({
       display: 'inline-flex',
       alignItems: 'center',
 
-      borderBottomWidth: '1',
       color: 'link',
       gap: '2',
       textStyle: '2xl',
+      padding: '2',
 
       _focus: {
         outline: 'none',
@@ -28,6 +28,32 @@ export const buttonLink = sva({
       height: '6',
       width: '6',
     },
+  },
+
+  variants: {
+    underline: {
+      true: {
+        link: {
+          borderBottomWidth: 1,
+        },
+      },
+
+      false: {
+        link: {
+          borderWidth: 1,
+          borderColor: 'transparent',
+          borderRadius: 'full',
+
+          '&:hover, &:focus-visible': {
+            borderColor: 'currentColor',
+          },
+        },
+      },
+    },
+  },
+
+  defaultVariants: {
+    underline: false,
   },
 })
 

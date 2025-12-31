@@ -1,4 +1,4 @@
-import { CreateRecipeForm } from '@/components/CreateRecipeForm'
+import { CreateRecipeForm } from '@/components/create-recipe-form'
 import { Page } from '@/components/page'
 import { drinkDetailOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'

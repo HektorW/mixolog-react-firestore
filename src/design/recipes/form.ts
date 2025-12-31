@@ -24,6 +24,7 @@ export const formField = sva({
 export const formLayout = cva({
   base: {
     ...stack.raw(),
+    gap: '6',
   },
 })
 

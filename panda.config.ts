@@ -30,8 +30,8 @@ export default defineConfig({
             hover: { value: 'black' },
           },
           link: {
-            DEFAULT: { value: '{colors.blue.500}' },
-            hover: { value: '{colors.blue.700}' },
+            DEFAULT: { value: 'black' },
+            hover: { value: 'black' },
           },
         },
         sizes: {

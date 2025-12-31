@@ -173,25 +173,25 @@ function FormContent() {
       <fieldset>
         <legend>Ingredienser</legend>
 
-        {ingredientIdList.map((id, idx) => (
+        {ingredientIdList.map((id, index) => (
           <div key={id} className={hstack({ gap: '4' })}>
             <input
-              aria-label={`Ingredient name ${idx + 1}`}
+              aria-label={`Ingredient name ${index + 1}`}
               placeholder="Namn"
               name="ingredientName"
-              required={idx === 0}
-              autoFocus
+              required={index === 0}
+              autoFocus={index > 0 && index === ingredientIdList.length - 1}
               className={input()}
             />
             <input
-              aria-label={`Ingredient amount ${idx + 1}`}
+              aria-label={`Ingredient amount ${index + 1}`}
               placeholder="Mängd"
               name="ingredientAmount"
-              required={idx === 0}
+              required={index === 0}
               className={input()}
             />
             <input
-              aria-label={`Ingredient unit ${idx + 1}`}
+              aria-label={`Ingredient unit ${index + 1}`}
               placeholder="Enhet"
               name="ingredientUnit"
               className={input()}
@@ -199,7 +199,7 @@ function FormContent() {
             {ingredientIdList.length > 1 && (
               <button
                 type="button"
-                aria-label={`Remove ingredient ${idx + 1}`}
+                aria-label={`Remove ingredient ${index + 1}`}
                 className={button({ size: 'sm' }).button}
                 onClick={() => removeRow(id)}
               >
@@ -221,7 +221,16 @@ function FormContent() {
         </button>
       </fieldset>
 
-      <button type="submit" disabled={pending} className={submit({ pending })}>
+      <button
+        type="submit"
+        disabled={pending}
+        className={cx(
+          submit({ pending }),
+          css({
+            marginBlockStart: '4',
+          }),
+        )}
+      >
         {pending ? 'Skapar…' : 'Spara recept'}
       </button>
     </div>

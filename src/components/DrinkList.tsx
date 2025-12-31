@@ -51,9 +51,9 @@ const listStyles = stack({
 
 const linkStyles = css({
   display: 'inline-block',
-  textStyle: '8xl',
+  textStyle: '7xl',
 
-  '@/lg': {
+  '@/xl': {
     textStyle: '9xl',
   },
 
