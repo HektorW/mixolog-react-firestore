@@ -1,8 +1,8 @@
-import { DrinkList } from '@/components/DrinkList'
+import { DrinkList } from '@/components/drink-list'
 import { Page } from '@/components/page'
 import { drinksListOptions } from '@/data/queries'
 import { createFileRoute } from '@tanstack/react-router'
-import { Suspense } from 'react'
+import { Suspense, ViewTransition } from 'react'
 
 export const Route = createFileRoute('/')({
   loader: ({ context }) => {
@@ -25,9 +25,11 @@ function IndexComponent() {
       />
 
       <Page.Main>
-        <Suspense fallback={<DrinkList.Skeleton />}>
-          <DrinkList />
-        </Suspense>
+        <ViewTransition>
+          <Suspense fallback={<DrinkList.Skeleton />}>
+            <DrinkList />
+          </Suspense>
+        </ViewTransition>
       </Page.Main>
     </>
   )

@@ -37,7 +37,7 @@ export function DrinkList() {
 DrinkList.Skeleton = function DrinkListSkeleton() {
   return (
     <ul className={listStyles}>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 5 }).map((_, index) => (
         <Glimmer key={index} as="li" className={linkStyles} />
       ))}
     </ul>

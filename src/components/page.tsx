@@ -24,7 +24,7 @@ export function Header({ title, backLink, createLink }: HeaderProps) {
   return (
     <header
       className={hstack({
-        height: 'layout-header-height',
+        paddingBlock: '4',
         paddingInline: 'layout-page-gutter',
       })}
     >
@@ -38,7 +38,7 @@ export function Header({ title, backLink, createLink }: HeaderProps) {
       <h1
         className={css({
           textStyle: '4xl',
-          textAlign: 'center',
+          textWrap: 'pretty',
         })}
       >
         {title}

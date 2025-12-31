@@ -17,7 +17,7 @@ function RouteComponent() {
       <Page.Header
         title={`Nytt recept för ${drink.name}`}
         backLink={{
-          to: '/drinks/$drinkSlug/recipes',
+          to: '/drinks/$drinkSlug',
           params: { drinkSlug },
           text: 'Tillbaka till recept',
         }}

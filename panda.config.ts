@@ -34,9 +34,6 @@ export default defineConfig({
             hover: { value: 'black' },
           },
         },
-        sizes: {
-          'layout-header-height': { value: '4rem' },
-        },
         spacing: {
           'layout-page-gutter': { value: '1rem' },
           'layout-page-block': { value: '2rem' },
