@@ -31,14 +31,21 @@ export const buttonLink = sva({
   },
 
   variants: {
-    underline: {
-      true: {
+    size: {
+      sm: {
         link: {
-          borderBottomWidth: 1,
+          textStyle: 'lg',
+          paddingBlock: '1',
+        },
+        icon: {
+          height: '4',
+          width: '4',
         },
       },
+    },
 
-      false: {
+    variant: {
+      simple: {
         link: {
           borderWidth: 1,
           borderColor: 'transparent',
@@ -49,11 +56,30 @@ export const buttonLink = sva({
           },
         },
       },
+
+      underline: {
+        link: {
+          borderBottomWidth: 1,
+        },
+      },
+
+      border: {
+        link: {
+          borderWidth: 1,
+          borderColor: 'currentColor',
+          borderRadius: 'full',
+          paddingX: '3',
+
+          '&:hover, &:focus-visible': {
+            borderStyle: 'dashed',
+          },
+        },
+      },
     },
   },
 
   defaultVariants: {
-    underline: false,
+    variant: 'simple',
   },
 })
 

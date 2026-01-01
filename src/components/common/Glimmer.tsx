@@ -26,6 +26,11 @@ export function Glimmer({
             color: 'transparent',
             pointerEvents: 'none',
             userSelect: 'none',
+
+            maskImage:
+              'linear-gradient(-75deg, rgba(0,0,0,.6) 30%, #000 50%, rgba(0,0,0,.6) 70%)',
+            maskSize: '200%',
+            animation: 'shimmer 1.5s infinite',
           },
           cssProp,
         ),

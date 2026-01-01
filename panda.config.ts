@@ -41,9 +41,9 @@ export default defineConfig({
       },
 
       keyframes: {
-        backgroundPan: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '100%': { backgroundPosition: '100% 50%' },
+        shimmer: {
+          from: { maskPosition: '150%' },
+          to: { maskPosition: '-50%' },
         },
       },
 

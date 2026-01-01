@@ -1,3 +1,4 @@
+import { AuthGuard } from '@/auth/auth-guard'
 import { IconArrowLeft } from '@/design/icons/arrow-left'
 import { IconPlus } from '@/design/icons/plus'
 import { buttonLink } from '@/design/recipes/buttons'
@@ -45,28 +46,30 @@ export function Header({ title, backLink, createLink }: HeaderProps) {
       </h1>
 
       {createLink && (
-        <Link
-          to={createLink.to}
-          className={cx(
-            'group',
-            createLinkStyle.link,
-            css({ marginLeft: 'auto' }),
-          )}
-        >
-          <span className={createLinkStyle.text}>{createLink.text}</span>
-          <IconPlus
+        <AuthGuard>
+          <Link
+            to={createLink.to}
             className={cx(
-              createLinkStyle.icon,
-              css({
-                _groupHover: {
-                  animationName: 'spin',
-                  animationDuration: 'slower',
-                  animationTimingFunction: 'out',
-                },
-              }),
+              'group',
+              createLinkStyle.link,
+              css({ marginLeft: 'auto' }),
             )}
-          />
-        </Link>
+          >
+            <span className={createLinkStyle.text}>{createLink.text}</span>
+            <IconPlus
+              className={cx(
+                createLinkStyle.icon,
+                css({
+                  _groupHover: {
+                    animationName: 'spin',
+                    animationDuration: 'slower',
+                    animationTimingFunction: 'out',
+                  },
+                }),
+              )}
+            />
+          </Link>
+        </AuthGuard>
       )}
     </header>
   )

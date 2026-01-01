@@ -13,9 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DrinksCreateRouteImport } from './routes/drinks/create'
 import { Route as DrinksDrinkSlugRouteRouteImport } from './routes/drinks/$drinkSlug/route'
 import { Route as DrinksDrinkSlugIndexRouteImport } from './routes/drinks/$drinkSlug/index'
-import { Route as DrinksDrinkSlugRecipesIndexRouteImport } from './routes/drinks/$drinkSlug/recipes/index'
 import { Route as DrinksDrinkSlugRecipesCreateRouteImport } from './routes/drinks/$drinkSlug/recipes/create'
-import { Route as DrinksDrinkSlugRecipesRecipeSlugRouteImport } from './routes/drinks/$drinkSlug/recipes/$recipeSlug'
+import { Route as DrinksDrinkSlugRecipesRecipeSlugEditRouteImport } from './routes/drinks/$drinkSlug/recipes/$recipeSlug/edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -37,22 +36,16 @@ const DrinksDrinkSlugIndexRoute = DrinksDrinkSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DrinksDrinkSlugRouteRoute,
 } as any)
-const DrinksDrinkSlugRecipesIndexRoute =
-  DrinksDrinkSlugRecipesIndexRouteImport.update({
-    id: '/recipes/',
-    path: '/recipes/',
-    getParentRoute: () => DrinksDrinkSlugRouteRoute,
-  } as any)
 const DrinksDrinkSlugRecipesCreateRoute =
   DrinksDrinkSlugRecipesCreateRouteImport.update({
     id: '/recipes/create',
     path: '/recipes/create',
     getParentRoute: () => DrinksDrinkSlugRouteRoute,
   } as any)
-const DrinksDrinkSlugRecipesRecipeSlugRoute =
-  DrinksDrinkSlugRecipesRecipeSlugRouteImport.update({
-    id: '/recipes/$recipeSlug',
-    path: '/recipes/$recipeSlug',
+const DrinksDrinkSlugRecipesRecipeSlugEditRoute =
+  DrinksDrinkSlugRecipesRecipeSlugEditRouteImport.update({
+    id: '/recipes/$recipeSlug/edit',
+    path: '/recipes/$recipeSlug/edit',
     getParentRoute: () => DrinksDrinkSlugRouteRoute,
   } as any)
 
@@ -61,17 +54,15 @@ export interface FileRoutesByFullPath {
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRouteWithChildren
   '/drinks/create': typeof DrinksCreateRoute
   '/drinks/$drinkSlug/': typeof DrinksDrinkSlugIndexRoute
-  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
   '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
-  '/drinks/$drinkSlug/recipes': typeof DrinksDrinkSlugRecipesIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug/edit': typeof DrinksDrinkSlugRecipesRecipeSlugEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/drinks/create': typeof DrinksCreateRoute
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugIndexRoute
-  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
   '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
-  '/drinks/$drinkSlug/recipes': typeof DrinksDrinkSlugRecipesIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug/edit': typeof DrinksDrinkSlugRecipesRecipeSlugEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,9 +70,8 @@ export interface FileRoutesById {
   '/drinks/$drinkSlug': typeof DrinksDrinkSlugRouteRouteWithChildren
   '/drinks/create': typeof DrinksCreateRoute
   '/drinks/$drinkSlug/': typeof DrinksDrinkSlugIndexRoute
-  '/drinks/$drinkSlug/recipes/$recipeSlug': typeof DrinksDrinkSlugRecipesRecipeSlugRoute
   '/drinks/$drinkSlug/recipes/create': typeof DrinksDrinkSlugRecipesCreateRoute
-  '/drinks/$drinkSlug/recipes/': typeof DrinksDrinkSlugRecipesIndexRoute
+  '/drinks/$drinkSlug/recipes/$recipeSlug/edit': typeof DrinksDrinkSlugRecipesRecipeSlugEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,26 +80,23 @@ export interface FileRouteTypes {
     | '/drinks/$drinkSlug'
     | '/drinks/create'
     | '/drinks/$drinkSlug/'
-    | '/drinks/$drinkSlug/recipes/$recipeSlug'
     | '/drinks/$drinkSlug/recipes/create'
-    | '/drinks/$drinkSlug/recipes'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/drinks/create'
     | '/drinks/$drinkSlug'
-    | '/drinks/$drinkSlug/recipes/$recipeSlug'
     | '/drinks/$drinkSlug/recipes/create'
-    | '/drinks/$drinkSlug/recipes'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug/edit'
   id:
     | '__root__'
     | '/'
     | '/drinks/$drinkSlug'
     | '/drinks/create'
     | '/drinks/$drinkSlug/'
-    | '/drinks/$drinkSlug/recipes/$recipeSlug'
     | '/drinks/$drinkSlug/recipes/create'
-    | '/drinks/$drinkSlug/recipes/'
+    | '/drinks/$drinkSlug/recipes/$recipeSlug/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -148,13 +135,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrinksDrinkSlugIndexRouteImport
       parentRoute: typeof DrinksDrinkSlugRouteRoute
     }
-    '/drinks/$drinkSlug/recipes/': {
-      id: '/drinks/$drinkSlug/recipes/'
-      path: '/recipes'
-      fullPath: '/drinks/$drinkSlug/recipes'
-      preLoaderRoute: typeof DrinksDrinkSlugRecipesIndexRouteImport
-      parentRoute: typeof DrinksDrinkSlugRouteRoute
-    }
     '/drinks/$drinkSlug/recipes/create': {
       id: '/drinks/$drinkSlug/recipes/create'
       path: '/recipes/create'
@@ -162,11 +142,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrinksDrinkSlugRecipesCreateRouteImport
       parentRoute: typeof DrinksDrinkSlugRouteRoute
     }
-    '/drinks/$drinkSlug/recipes/$recipeSlug': {
-      id: '/drinks/$drinkSlug/recipes/$recipeSlug'
-      path: '/recipes/$recipeSlug'
-      fullPath: '/drinks/$drinkSlug/recipes/$recipeSlug'
-      preLoaderRoute: typeof DrinksDrinkSlugRecipesRecipeSlugRouteImport
+    '/drinks/$drinkSlug/recipes/$recipeSlug/edit': {
+      id: '/drinks/$drinkSlug/recipes/$recipeSlug/edit'
+      path: '/recipes/$recipeSlug/edit'
+      fullPath: '/drinks/$drinkSlug/recipes/$recipeSlug/edit'
+      preLoaderRoute: typeof DrinksDrinkSlugRecipesRecipeSlugEditRouteImport
       parentRoute: typeof DrinksDrinkSlugRouteRoute
     }
   }
@@ -174,16 +154,15 @@ declare module '@tanstack/react-router' {
 
 interface DrinksDrinkSlugRouteRouteChildren {
   DrinksDrinkSlugIndexRoute: typeof DrinksDrinkSlugIndexRoute
-  DrinksDrinkSlugRecipesRecipeSlugRoute: typeof DrinksDrinkSlugRecipesRecipeSlugRoute
   DrinksDrinkSlugRecipesCreateRoute: typeof DrinksDrinkSlugRecipesCreateRoute
-  DrinksDrinkSlugRecipesIndexRoute: typeof DrinksDrinkSlugRecipesIndexRoute
+  DrinksDrinkSlugRecipesRecipeSlugEditRoute: typeof DrinksDrinkSlugRecipesRecipeSlugEditRoute
 }
 
 const DrinksDrinkSlugRouteRouteChildren: DrinksDrinkSlugRouteRouteChildren = {
   DrinksDrinkSlugIndexRoute: DrinksDrinkSlugIndexRoute,
-  DrinksDrinkSlugRecipesRecipeSlugRoute: DrinksDrinkSlugRecipesRecipeSlugRoute,
   DrinksDrinkSlugRecipesCreateRoute: DrinksDrinkSlugRecipesCreateRoute,
-  DrinksDrinkSlugRecipesIndexRoute: DrinksDrinkSlugRecipesIndexRoute,
+  DrinksDrinkSlugRecipesRecipeSlugEditRoute:
+    DrinksDrinkSlugRecipesRecipeSlugEditRoute,
 }
 
 const DrinksDrinkSlugRouteRouteWithChildren =

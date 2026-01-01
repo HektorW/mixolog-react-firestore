@@ -1,3 +1,4 @@
+import { AuthGuard } from '@/auth/auth-guard'
 import { Glimmer } from '@/components/common/Glimmer'
 import { DrinkName } from '@/components/drink-name'
 import { Page } from '@/components/page'
@@ -38,21 +39,31 @@ function DrinkDetailRouteRoot() {
   const { data: recipes } = useSuspenseQuery(recipesForDrinkOptions(drinkSlug))
 
   if (recipes.length === 0) {
-    const linkStyles = buttonLink()
+    const linkStyles = buttonLink({ variant: 'border', size: 'sm' })
 
     return (
       <Layout>
-        <div className={vstack({ gap: '4', marginTop: '8' })}>
-          <p className={css({ textStyle: '2xl' })}>Inga recept än :(</p>
-
-          <Link
-            to="/drinks/$drinkSlug/recipes/create"
-            params={{ drinkSlug }}
-            className={linkStyles.link}
+        <div className={vstack({ gap: '4' })}>
+          <p
+            className={css({
+              marginBlockStart: '10',
+              marginBlockEnd: '4',
+              textStyle: '4xl',
+            })}
           >
-            <span className={linkStyles.text}>Lägg till det första!</span>
-            <IconPlus className={linkStyles.icon} />
-          </Link>
+            Inga recept än :(
+          </p>
+
+          <AuthGuard>
+            <Link
+              to="/drinks/$drinkSlug/recipes/create"
+              params={{ drinkSlug }}
+              className={linkStyles.link}
+            >
+              <span className={linkStyles.text}>Lägg till det första!</span>
+              <IconPlus className={linkStyles.icon} />
+            </Link>
+          </AuthGuard>
         </div>
       </Layout>
     )
@@ -64,6 +75,8 @@ function DrinkDetailRouteRoot() {
   return (
     <Layout>
       <RecipePillList drinkSlug={drinkSlug} recipeSlug={selectedRecipe?.slug} />
+
+      <hr className={css({ borderColor: 'gray.300', marginY: '6' })} />
 
       {selectedRecipe && (
         <ViewTransition>

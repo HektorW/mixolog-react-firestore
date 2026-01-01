@@ -1,3 +1,4 @@
+import { AuthGuard } from '@/auth/auth-guard'
 import { recipesForDrinkOptions } from '@/data/queries'
 import { IconPlus } from '@/design/icons/plus'
 import { pill, pillList } from '@/design/recipes/pills'
@@ -38,15 +39,17 @@ export function RecipePillList({ drinkSlug, recipeSlug }: RecipePillListProps) {
         </li>
       ))}
 
-      <li>
-        <Link
-          to="/drinks/$drinkSlug/recipes/create"
-          params={{ drinkSlug }}
-          className={pill({ variant: 'outline' })}
-        >
-          Lägg till recept <IconPlus />
-        </Link>
-      </li>
+      <AuthGuard>
+        <li>
+          <Link
+            to="/drinks/$drinkSlug/recipes/create"
+            params={{ drinkSlug }}
+            className={pill({ variant: 'outline' })}
+          >
+            Lägg till recept <IconPlus />
+          </Link>
+        </li>
+      </AuthGuard>
     </ul>
   )
 }
