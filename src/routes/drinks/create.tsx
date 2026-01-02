@@ -1,8 +1,13 @@
+import { loaderAuthGuard } from '@/auth/auth-guard'
 import { CreateDrinkForm } from '@/components/create-drink-form'
 import { Page } from '@/components/page'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/drinks/create')({
+  beforeLoad: async ({ context }) => {
+    loaderAuthGuard({ auth: context.auth })
+  },
+
   component: RouteComponent,
 })
 

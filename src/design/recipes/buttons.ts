@@ -34,7 +34,7 @@ export const buttonLink = sva({
     size: {
       sm: {
         link: {
-          textStyle: 'lg',
+          textStyle: 'sm',
           paddingBlock: '1',
         },
         icon: {

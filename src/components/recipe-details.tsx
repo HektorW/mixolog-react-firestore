@@ -48,6 +48,7 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
             params={{ drinkSlug, recipeSlug }}
             className={toolbarLinkStyle.link}
           >
+            <span className={toolbarLinkStyle.text}>Redigera</span>
             <IconPencil className={toolbarLinkStyle.icon} />
           </Link>
         </AuthGuard>

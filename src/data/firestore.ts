@@ -1,4 +1,5 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
+import { getAuth, GoogleAuthProvider, type Auth } from 'firebase/auth'
 import {
   initializeFirestore,
   persistentLocalCache,
@@ -7,6 +8,8 @@ import {
 
 let app: FirebaseApp | undefined
 let db: Firestore | undefined
+let auth: Auth | undefined
+let googleAuthProvider: GoogleAuthProvider | undefined
 
 export function getFirebaseApp(): FirebaseApp {
   if (!app) {
@@ -33,4 +36,21 @@ export async function getDb(): Promise<Firestore> {
   }
 
   return db
+}
+
+export function getAuthInstance(): Auth {
+  if (!auth) {
+    const _app = getFirebaseApp()
+    auth = getAuth(_app)
+  }
+
+  return auth
+}
+
+export function getGoogleAuthProvider(): GoogleAuthProvider {
+  if (!googleAuthProvider) {
+    googleAuthProvider = new GoogleAuthProvider()
+  }
+
+  return googleAuthProvider
 }

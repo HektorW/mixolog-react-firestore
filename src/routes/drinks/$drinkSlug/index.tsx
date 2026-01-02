@@ -76,7 +76,7 @@ function DrinkDetailRouteRoot() {
     <Layout>
       <RecipePillList drinkSlug={drinkSlug} recipeSlug={selectedRecipe?.slug} />
 
-      <hr className={css({ borderColor: 'gray.300', marginY: '6' })} />
+      <hr className={css({ borderColor: 'gray.300', marginY: '4' })} />
 
       {selectedRecipe && (
         <ViewTransition>
