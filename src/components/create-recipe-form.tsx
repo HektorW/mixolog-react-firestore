@@ -6,7 +6,6 @@ import { IconCross } from '@/design/icons/cross'
 import { IconPlus } from '@/design/icons/plus'
 import { button } from '@/design/recipes/buttons'
 import { formLayout, input, submit } from '@/design/recipes/form'
-import type { Ingredient } from '@/schemas/ingredient'
 import { css, cx } from '@styled/css'
 import { hstack } from '@styled/patterns'
 import { useQueryClient } from '@tanstack/react-query'
@@ -14,6 +13,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
+import { parseRecipeForm } from './recipe-form.parse'
 
 interface Props {
   drinkSlug: string
@@ -32,63 +32,19 @@ function CreateRecipeFormInner({ drinkSlug }: Props) {
   const navigate = useNavigate()
 
   async function action(formData: FormData) {
-    function parseFormEntry(key: string): string | undefined {
-      const value = formData.get(key)
-      if (value === null || value === undefined || value === '') {
-        return undefined
-      }
-
-      return String(value).trim()
-    }
-
-    const name = parseFormEntry('name')
-    if (!name) {
-      throw new Error('Name is required')
-    }
-
-    const instructions = parseFormEntry('instructions')
-    if (!instructions) {
-      throw new Error('Instructions are required')
-    }
-
-    const recipeSlug = parseFormEntry('slug')
-    const inspirationUrl = parseFormEntry('inspirationUrl')
-
-    const ingredientNames = formData
-      .getAll('ingredientName')
-      .map(($) => String($).trim())
-
-    const ingredientAmounts = formData
-      .getAll('ingredientAmount')
-      .map(($) => String($).trim())
-
-    const ingredientUnits = formData
-      .getAll('ingredientUnit')
-      .map(($) => String($).trim())
-
-    const ingredients: Ingredient[] = ingredientNames.map((name, index) => ({
-      name,
-      amount: ingredientAmounts[index] || '',
-      unit: ingredientUnits[index] || undefined,
-    }))
-
-    const filtered = ingredients.filter(($) => $.name)
+    const formRecipe = parseRecipeForm(formData)
 
     const recipe = await createRecipe({
+      ...formRecipe,
       drinkSlug,
-
-      name,
-      slug: recipeSlug,
-      inspirationUrl: inspirationUrl || undefined,
-      instructions,
-      ingredients: filtered,
     })
 
     await queryClient.invalidateQueries(recipesForDrinkOptions(drinkSlug))
 
     navigate({
-      to: '/drinks/$drinkSlug/recipes/$recipeSlug',
-      params: { drinkSlug, recipeSlug: recipe.slug },
+      to: '/drinks/$drinkSlug',
+      params: { drinkSlug },
+      search: { recipeSlug: recipe.slug },
     })
   }
 

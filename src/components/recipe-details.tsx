@@ -44,9 +44,9 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
       <section className={hstack({ gap: '2', justify: 'end' })}>
         <AuthGuard>
           <Link
+            className={toolbarLinkStyle.link}
             to="/drinks/$drinkSlug/recipes/$recipeSlug/edit"
             params={{ drinkSlug, recipeSlug }}
-            className={toolbarLinkStyle.link}
           >
             <span className={toolbarLinkStyle.text}>Redigera</span>
             <IconPencil className={toolbarLinkStyle.icon} />
@@ -74,8 +74,8 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
         <ul
           className={css({
             display: 'grid',
-            gridTemplateColumns: 'auto auto 1fr',
             gap: '1',
+            gridTemplateColumns: 'auto auto 1fr',
           })}
         >
           {recipe.ingredients.map((ingredient, index) => (
@@ -90,8 +90,8 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
               {ingredient.amount && (
                 <span
                   className={css({
-                    color: 'gray.600',
                     gridColumn: '1 / 2',
+                    color: 'gray.600',
                     textAlign: 'right',
                   })}
                 >
@@ -101,7 +101,7 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
 
               {ingredient.unit && (
                 <span
-                  className={css({ color: 'gray.600', gridColumn: '2 / 3' })}
+                  className={css({ gridColumn: '2 / 3', color: 'gray.600' })}
                 >
                   {ingredient.unit}
                 </span>
@@ -110,7 +110,8 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
               <span
                 className={css({
                   gridColumn: '3 / 4',
-                  paddingInlineStart: '2',
+                  paddingInlineStart: '4',
+                  fontWeight: '500',
                 })}
               >
                 {ingredient.name}
@@ -126,10 +127,10 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
         className={css({
           '& ol': {
             display: 'flex',
-            flexDirection: 'column',
             gap: '1',
-            listStyleType: 'decimal',
+            flexDirection: 'column',
             marginLeft: '1.5em',
+            listStyleType: 'decimal',
           },
         })}
       >

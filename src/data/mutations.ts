@@ -1,7 +1,7 @@
 // T031 Create mutations (drink & recipe)
 import { DrinkSchema, type CreateDrink, type Drink } from '@/schemas/drink'
 import type { Ingredient } from '@/schemas/ingredient'
-import { RecipeSchema, type Recipe } from '@/schemas/recipe'
+import { RecipeSchema, type EditRecipe, type Recipe } from '@/schemas/recipe'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { getDb } from './firestore'
 import { normalizeSlug } from './slug'
@@ -59,6 +59,20 @@ export async function createRecipe(input: CreateRecipeInput): Promise<Recipe> {
   await setDoc(docReference, removeUndefinedFields(toWrite))
 
   return RecipeSchema.parse({ ...toWrite, createdAt: new Date(), slug })
+}
+
+export async function updateRecipe(input: EditRecipe) {
+  const db = await getDb()
+  const docReference = doc(db, 'drinks', input.drinkSlug, 'recipes', input.slug)
+
+  const toWrite = {
+    name: input.name.trim(),
+    instructions: input.instructions.trim(),
+    ingredients: input.ingredients.map(($) => removeUndefinedFields($)),
+    inspirationUrl: input.inspirationUrl?.trim(),
+  } as const
+
+  await setDoc(docReference, removeUndefinedFields(toWrite), { merge: true })
 }
 
 function removeUndefinedFields<T>(obj: T): Partial<T> {

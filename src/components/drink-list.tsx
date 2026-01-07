@@ -21,9 +21,9 @@ export function DrinkList() {
         <ViewTransition key={drink.slug}>
           <li>
             <Link
+              className={linkStyles}
               to={'/drinks/$drinkSlug'}
               params={{ drinkSlug: drink.slug }}
-              className={linkStyles}
             >
               {drink.name}
             </Link>
@@ -38,7 +38,7 @@ DrinkList.Skeleton = function DrinkListSkeleton() {
   return (
     <ul className={listStyles}>
       {Array.from({ length: 5 }).map((_, index) => (
-        <Glimmer key={index} as="li" className={linkStyles} />
+        <Glimmer as="li" className={linkStyles} key={index} />
       ))}
     </ul>
   )
@@ -50,11 +50,11 @@ const listStyles = stack({
 })
 
 const linkStyles = css({
+  textStyle: '5xl',
   display: 'inline-block',
-  textStyle: '7xl',
 
   '@/xl': {
-    textStyle: '9xl',
+    textStyle: '7xl',
   },
 
   '&:focus, &:focus-visible': {

@@ -11,7 +11,7 @@ import { type ReactNode } from 'react'
 
 interface HeaderProps {
   title: ReactNode
-  backLink?: Pick<LinkComponentProps, 'to' | 'params'> & {
+  backLink?: Pick<LinkComponentProps, 'to' | 'params' | 'search'> & {
     text: ReactNode
   }
   createLink?: {
@@ -29,12 +29,14 @@ export function Header({ title, backLink, createLink }: HeaderProps) {
   return (
     <header
       className={hstack({
+        containerType: 'inline-size',
+        alignItems: 'start',
         paddingBlock: '4',
         paddingInline: 'layout-page-gutter',
       })}
     >
       {backLink && (
-        <Link to={backLink.to} className={backLinkStyle.link}>
+        <Link className={backLinkStyle.link} to={backLink.to}>
           <IconArrowLeft className={backLinkStyle.icon} />
           <span className={visuallyHidden()}>{backLink.text}</span>
         </Link>
@@ -42,19 +44,20 @@ export function Header({ title, backLink, createLink }: HeaderProps) {
 
       <h1
         className={css({
-          textStyle: '4xl',
+          textStyle: '2xl',
+          alignSelf: 'center',
           textWrap: 'pretty',
         })}
       >
         {title}
       </h1>
 
-      <div className={hstack({ marginLeft: 'auto', gap: '2' })}>
+      <div className={hstack({ gap: '2', marginLeft: 'auto' })}>
         {createLink && (
           <AuthGuard>
             <Link
-              to={createLink.to}
               className={cx('group', createLinkStyle.link)}
+              to={createLink.to}
             >
               <span className={createLinkStyle.text}>{createLink.text}</span>
               <IconPlus
@@ -89,7 +92,6 @@ function AuthButton() {
       className={cx(styles.link, css({ marginLeft: 'auto' }))}
       onClick={auth.user ? auth.signOutAction : auth.signInAction}
     >
-      <span className={styles.text}>{auth.user ? 'Logga ut' : 'Logga in'}</span>
       <IconProfile className={styles.icon} />
     </button>
   )
@@ -99,8 +101,8 @@ function Main({ children }: { children: ReactNode }) {
   return (
     <main
       className={css({
-        paddingInline: 'layout-page-gutter',
         paddingBlock: 'layout-page-block',
+        paddingInline: 'layout-page-gutter',
       })}
     >
       {children}

@@ -1,5 +1,5 @@
 import { loaderAuthGuard } from '@/auth/auth-guard'
-import { CreateRecipeForm } from '@/components/create-recipe-form'
+import { RecipeFormCreate } from '@/components/forms/recipe-form-create'
 import { Page } from '@/components/page'
 import { drinkDetailOptions } from '@/data/queries'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -35,7 +35,7 @@ function RouteComponent() {
       />
 
       <Page.Main>
-        <CreateRecipeForm drinkSlug={drink.slug} />
+        <RecipeFormCreate drinkSlug={drinkSlug} />
       </Page.Main>
     </>
   )

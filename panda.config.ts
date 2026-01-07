@@ -36,7 +36,7 @@ export default defineConfig({
         },
         spacing: {
           'layout-page-gutter': { value: '1rem' },
-          'layout-page-block': { value: '2rem' },
+          'layout-page-block': { value: '1rem' },
         },
       },
 

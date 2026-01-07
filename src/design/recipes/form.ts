@@ -5,18 +5,38 @@ export const formField = sva({
   slots: ['container', 'label', 'control', 'error'],
 
   base: {
+    container: {
+      ...stack.raw(),
+      gap: '1',
+    },
+
     label: {
-      display: 'block',
-      marginBottom: '2',
-      textStyle: '2xl',
+      textStyle: 'sm',
     },
 
     control: {},
 
     error: {
-      marginTop: '1',
+      textStyle: 'sm',
       color: 'red.600',
-      textStyle: 'md',
+    },
+  },
+})
+
+export const fieldset = sva({
+  slots: ['container', 'legend'],
+
+  base: {
+    container: {
+      ...stack.raw(),
+    },
+
+    legend: {
+      // textStyle: 'md',
+      borderColor: 'neutral.500',
+      borderBottom: '1px solid',
+      width: 'full',
+      marginBlockEnd: '4',
     },
   },
 })
@@ -24,54 +44,63 @@ export const formField = sva({
 export const formLayout = cva({
   base: {
     ...stack.raw(),
-    gap: '6',
+    gap: '10',
+    maxWidth: '60ch',
+    marginX: 'auto',
   },
 })
 
 export const input = cva({
   base: {
     display: 'block',
-    width: 'full',
-    paddingY: '2',
-    paddingX: '3',
-    borderWidth: '1',
+
     borderColor: 'gray.300',
     borderRadius: 'md',
+    borderWidth: '1',
+
+    width: 'full',
+
+    paddingY: '2',
+    paddingX: '3',
+
     backgroundColor: 'white',
-    textStyle: '2xl',
+
+    _readOnly: {
+      cursor: 'not-allowed',
+      backgroundColor: 'gray.100',
+    },
 
     '&:focus': {
-      outlineColor: 'primary',
       borderColor: 'primary',
+      outlineColor: 'primary',
     },
   },
 })
 
 export const submit = cva({
   base: {
+    textStyle: '2xl',
+    borderRadius: 'md',
     paddingY: '2',
     paddingX: '4',
-    backgroundColor: 'primary',
     color: 'white',
-    borderRadius: 'md',
-    textStyle: '2xl',
     fontWeight: '600',
 
+    backgroundColor: 'primary',
+    _disabled: {
+      cursor: 'not-allowed',
+      backgroundColor: 'gray.400',
+    },
     '&:hover, &:focus-visible': {
       backgroundColor: 'primary.hover',
-    },
-
-    _disabled: {
-      backgroundColor: 'gray.400',
-      cursor: 'not-allowed',
     },
   },
 
   variants: {
     pending: {
       true: {
-        backgroundColor: 'gray.400',
         cursor: 'not-allowed',
+        backgroundColor: 'gray.400',
       },
     },
   },

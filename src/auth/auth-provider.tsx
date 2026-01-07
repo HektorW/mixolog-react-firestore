@@ -34,7 +34,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState(getAuthInstance().currentUser)
   const [loading, startTransition] = useTransition()
 
   const canAuthenticate = useCanAuthenticate()

@@ -5,14 +5,15 @@ export const buttonLink = sva({
 
   base: {
     link: {
-      display: 'inline-flex',
-      alignItems: 'center',
-
-      color: 'link',
-      gap: '2',
       textStyle: '2xl',
+      display: 'inline-flex',
+      gap: '2',
+      justifyContent: 'center',
+
+      alignItems: 'center',
       padding: '2',
 
+      color: 'link',
       _focus: {
         outline: 'none',
       },
@@ -25,8 +26,8 @@ export const buttonLink = sva({
     text: {},
 
     icon: {
-      height: '6',
       width: '6',
+      height: '6',
     },
   },
 
@@ -38,8 +39,8 @@ export const buttonLink = sva({
           paddingBlock: '1',
         },
         icon: {
-          height: '4',
           width: '4',
+          height: '4',
         },
       },
     },
@@ -47,10 +48,10 @@ export const buttonLink = sva({
     variant: {
       simple: {
         link: {
-          borderWidth: 1,
           borderColor: 'transparent',
           borderRadius: 'full',
 
+          borderWidth: 1,
           '&:hover, &:focus-visible': {
             borderColor: 'currentColor',
           },
@@ -65,9 +66,9 @@ export const buttonLink = sva({
 
       border: {
         link: {
-          borderWidth: 1,
           borderColor: 'currentColor',
           borderRadius: 'full',
+          borderWidth: 1,
           paddingX: '3',
 
           '&:hover, &:focus-visible': {
@@ -88,17 +89,18 @@ export const button = sva({
 
   base: {
     button: {
+      textStyle: '2xl',
       display: 'inline-flex',
+      gap: '2',
+      justifyContent: 'center',
       alignItems: 'center',
+      borderRadius: 'md',
       paddingY: '2',
       paddingX: '4',
-      backgroundColor: 'primary',
       color: 'white',
-      borderRadius: 'md',
-      gap: '2',
-      textStyle: '2xl',
       fontWeight: '600',
 
+      backgroundColor: 'primary',
       '&:hover, &:focus-visible': {
         backgroundColor: 'primary.hover',
       },
@@ -107,8 +109,8 @@ export const button = sva({
     text: {},
 
     icon: {
-      height: '6',
       width: '6',
+      height: '6',
     },
   },
 
@@ -116,13 +118,13 @@ export const button = sva({
     size: {
       sm: {
         button: {
+          textStyle: 'xl',
           paddingY: '1',
           paddingX: '3',
-          textStyle: 'xl',
         },
         icon: {
-          height: '4',
           width: '4',
+          height: '4',
         },
       },
     },
