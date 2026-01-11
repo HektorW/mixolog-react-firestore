@@ -24,17 +24,23 @@ export const IngredientsFieldGroup = withFieldGroup({
                 <li key={index} className={hstack({ gap: '2' })}>
                   <group.AppField
                     name={`ingredients[${index}].name`}
-                    children={(nameField) => <nameField.TextField />}
+                    children={(nameField) => (
+                      <nameField.TextField placeholder="Ingrediens" />
+                    )}
                   />
 
                   <group.AppField
                     name={`ingredients[${index}].amount`}
-                    children={(amountField) => <amountField.TextField />}
+                    children={(amountField) => (
+                      <amountField.TextField placeholder="Mängd" />
+                    )}
                   />
 
                   <group.AppField
                     name={`ingredients[${index}].unit`}
-                    children={(unitField) => <unitField.TextField />}
+                    children={(unitField) => (
+                      <unitField.TextField placeholder="Enhet" />
+                    )}
                   />
 
                   <button

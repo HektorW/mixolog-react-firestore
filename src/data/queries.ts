@@ -68,7 +68,7 @@ export function recipesForDrinkOptions(drinkSlug: string) {
 
       const collectionQuery = query(
         collectionReference,
-        orderBy('createdAt', 'desc'),
+        orderBy('createdAt', 'asc'),
       )
 
       const querySnapshot = await getDocs(collectionQuery)

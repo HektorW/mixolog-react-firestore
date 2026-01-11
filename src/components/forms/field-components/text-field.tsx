@@ -8,6 +8,7 @@ interface TextFieldProps {
   readonly?: boolean
   id?: string
   label?: string
+  placeholder?: string
   type?: 'text' | 'email' | 'url'
 }
 
@@ -32,6 +33,7 @@ export function TextField(props: TextFieldProps) {
         type={props.type ?? 'text'}
         name={field.name}
         value={field.state.value ?? ''}
+        placeholder={props.placeholder}
         readOnly={props.readonly}
         className={cx(fieldStyles.control, input())}
         onBlur={field.handleBlur}

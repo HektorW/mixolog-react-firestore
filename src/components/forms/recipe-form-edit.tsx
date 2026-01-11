@@ -79,17 +79,17 @@ export function RecipeFormEdit(props: RecipeFormEditProps) {
         />
       </Fieldset>
 
+      <IngredientsFieldGroup
+        form={form}
+        fields={{ ingredients: 'ingredients' }}
+      />
+
       <RecipeDetailsFieldGroup
         form={form}
         fields={{
           instructions: 'instructions',
           notes: 'notes',
         }}
-      />
-
-      <IngredientsFieldGroup
-        form={form}
-        fields={{ ingredients: 'ingredients' }}
       />
 
       <OthersFieldGroup

@@ -125,12 +125,48 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
 
       <section
         className={css({
-          '& ol': {
+          textStyle: 'lg',
+          textWrap: 'balance',
+
+          // List styles
+          // -- Default list styles
+          '& :is(ol, ul)': {
             display: 'flex',
-            gap: '1',
+            gap: '4',
             flexDirection: 'column',
-            marginLeft: '1.5em',
-            listStyleType: 'decimal',
+          },
+
+          // -- Nested list styles
+          '& :is(ul, ol) :is(ul, ol)': {
+            gap: '1',
+          },
+
+          // -- Ordered list styles
+          '& ol': {
+            counterReset: 'item',
+          },
+
+          // Item styles
+          // -- Shared
+          '& li': {
+            position: 'relative',
+            paddingInlineStart: '5',
+          },
+
+          '& li::before': {
+            textStyle: 'sm',
+            position: 'absolute',
+            insetBlockStart: '0.3em',
+            insetInlineStart: '0',
+          },
+
+          '& ol > li::before': {
+            content: 'counter(item) "."',
+            counterIncrement: 'item',
+          },
+
+          '& ul > li::before': {
+            content: '"-"',
           },
         })}
       >

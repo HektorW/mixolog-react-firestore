@@ -46,9 +46,9 @@ function DrinkDetailRouteRoot() {
         <div className={vstack({ gap: '4' })}>
           <p
             className={css({
-              marginBlockStart: '10',
-              marginBlockEnd: '4',
               textStyle: '4xl',
+              marginBlockEnd: '4',
+              marginBlockStart: '10',
             })}
           >
             Inga recept än :(
@@ -56,9 +56,9 @@ function DrinkDetailRouteRoot() {
 
           <AuthGuard>
             <Link
+              className={linkStyles.link}
               to="/drinks/$drinkSlug/recipes/create"
               params={{ drinkSlug }}
-              className={linkStyles.link}
             >
               <span className={linkStyles.text}>Lägg till det första!</span>
               <IconPlus className={linkStyles.icon} />

@@ -57,7 +57,9 @@ export function RecipeFormCreate(props: RecipeFormCreateProps) {
       <Fieldset legend="Allmän information">
         <form.AppField
           name="name"
-          children={(field) => <field.TextField label="Namn" />}
+          children={(field) => (
+            <field.TextField label="Namn" placeholder='T ex "Favoriten"' />
+          )}
         />
 
         <form.AppField
@@ -66,18 +68,18 @@ export function RecipeFormCreate(props: RecipeFormCreateProps) {
         />
       </Fieldset>
 
+      <IngredientsFieldGroup
+        form={form}
+        fields={{
+          ingredients: 'ingredients',
+        }}
+      />
+
       <RecipeDetailsFieldGroup
         form={form}
         fields={{
           instructions: 'instructions',
           notes: 'notes',
-        }}
-      />
-
-      <IngredientsFieldGroup
-        form={form}
-        fields={{
-          ingredients: 'ingredients',
         }}
       />
 
