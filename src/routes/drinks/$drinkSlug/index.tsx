@@ -11,7 +11,7 @@ import { css } from '@styled/css'
 import { vstack } from '@styled/patterns'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Suspense, ViewTransition, type ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 import z from 'zod'
 
 const drinkDetailsSearchSchema = z.object({
@@ -43,27 +43,34 @@ function DrinkDetailRouteRoot() {
 
     return (
       <Layout>
-        <div className={vstack({ gap: '4' })}>
-          <p
-            className={css({
-              textStyle: '4xl',
-              marginBlockEnd: '4',
-              marginBlockStart: '10',
-            })}
-          >
-            Inga recept än :(
-          </p>
-
-          <AuthGuard>
-            <Link
-              className={linkStyles.link}
-              to="/drinks/$drinkSlug/recipes/create"
-              params={{ drinkSlug }}
+        <div
+          className={css({
+            display: 'grid',
+            gap: '4',
+            minHeight: '70dvh',
+            placeItems: 'center',
+          })}
+        >
+          <div className={vstack({ gap: '2' })}>
+            <p
+              className={css({
+                marginBlockEnd: '4',
+              })}
             >
-              <span className={linkStyles.text}>Lägg till det första!</span>
-              <IconPlus className={linkStyles.icon} />
-            </Link>
-          </AuthGuard>
+              Inga recept än :(
+            </p>
+
+            <AuthGuard>
+              <Link
+                className={linkStyles.link}
+                to="/drinks/$drinkSlug/recipes/create"
+                params={{ drinkSlug }}
+              >
+                <span className={linkStyles.text}>Lägg till det första!</span>
+                <IconPlus className={linkStyles.icon} />
+              </Link>
+            </AuthGuard>
+          </div>
         </div>
       </Layout>
     )
@@ -79,15 +86,15 @@ function DrinkDetailRouteRoot() {
       <hr className={css({ borderColor: 'gray.300', marginY: '4' })} />
 
       {selectedRecipe && (
-        <ViewTransition>
-          <Suspense fallback={<RecipeDetails.Skeleton />}>
-            <RecipeDetails
-              key={selectedRecipe.slug}
-              drinkSlug={drinkSlug}
-              recipeSlug={selectedRecipe?.slug}
-            />
-          </Suspense>
-        </ViewTransition>
+        // <ViewTransition>
+        <Suspense fallback={<RecipeDetails.Skeleton />}>
+          <RecipeDetails
+            key={selectedRecipe.slug}
+            drinkSlug={drinkSlug}
+            recipeSlug={selectedRecipe?.slug}
+          />
+        </Suspense>
+        // </ViewTransition>
       )}
     </Layout>
   )

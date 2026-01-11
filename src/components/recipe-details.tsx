@@ -41,7 +41,17 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
 
   return (
     <article className={stack({ gap: '6' })}>
-      <section className={hstack({ gap: '2', justify: 'end' })}>
+      <section className={hstack({ gap: '2' })}>
+        <h2
+          className={css({
+            marginInlineEnd: 'auto',
+            fontSize: '2xl',
+            fontWeight: 'bold',
+          })}
+        >
+          {recipe.name}
+        </h2>
+
         <AuthGuard>
           <Link
             className={toolbarLinkStyle.link}
@@ -61,64 +71,66 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
         )}
       </section>
 
-      <section className={card({ variant: 'dotted' })}>
+      <section className={stack({ gap: '2' })}>
         <h3
           className={css({
             textStyle: 'xl',
-            marginBlockEnd: '2',
             fontWeight: 'lighter',
           })}
         >
           Ingredienser
         </h3>
-        <ul
-          className={css({
-            display: 'grid',
-            gap: '1',
-            gridTemplateColumns: 'auto auto 1fr',
-          })}
-        >
-          {recipe.ingredients.map((ingredient, index) => (
-            <li
-              key={index}
-              className={css({
-                display: 'grid',
-                gridColumn: '1 / -1',
-                gridTemplateColumns: 'subgrid',
-              })}
-            >
-              {ingredient.amount && (
-                <span
-                  className={css({
-                    gridColumn: '1 / 2',
-                    color: 'gray.600',
-                    textAlign: 'right',
-                  })}
-                >
-                  {ingredient.amount}
-                </span>
-              )}
 
-              {ingredient.unit && (
-                <span
-                  className={css({ gridColumn: '2 / 3', color: 'gray.600' })}
-                >
-                  {ingredient.unit}
-                </span>
-              )}
-
-              <span
+        <div className={card({ variant: 'dotted' })}>
+          <ul
+            className={css({
+              display: 'grid',
+              gap: '1',
+              gridTemplateColumns: 'auto auto 1fr',
+            })}
+          >
+            {recipe.ingredients.map((ingredient, index) => (
+              <li
+                key={index}
                 className={css({
-                  gridColumn: '3 / 4',
-                  paddingInlineStart: '4',
-                  fontWeight: '500',
+                  display: 'grid',
+                  gridColumn: '1 / -1',
+                  gridTemplateColumns: 'subgrid',
                 })}
               >
-                {ingredient.name}
-              </span>
-            </li>
-          ))}
-        </ul>
+                {ingredient.amount && (
+                  <span
+                    className={css({
+                      gridColumn: '1 / 2',
+                      color: 'gray.600',
+                      textAlign: 'right',
+                    })}
+                  >
+                    {ingredient.amount}
+                  </span>
+                )}
+
+                {ingredient.unit && (
+                  <span
+                    className={css({ gridColumn: '2 / 3', color: 'gray.600' })}
+                  >
+                    {ingredient.unit}
+                  </span>
+                )}
+
+                <span
+                  className={css({
+                    gridColumn: '3 / 4',
+                    paddingInlineStart: '4',
+                    fontWeight: '500',
+                  })}
+                >
+                  {ingredient.name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <hr className={css({ borderColor: 'gray.200', marginY: '1' })} />
@@ -126,7 +138,7 @@ export function RecipeDetails({ drinkSlug, recipeSlug }: RecipeDetailsProps) {
       <section
         className={css({
           textStyle: 'lg',
-          textWrap: 'balance',
+          textWrap: 'pretty',
 
           // List styles
           // -- Default list styles
