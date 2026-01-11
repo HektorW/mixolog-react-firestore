@@ -11,7 +11,7 @@ import { css } from '@styled/css'
 import { vstack } from '@styled/patterns'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Suspense, type ReactNode } from 'react'
+import { Suspense, ViewTransition, type ReactNode } from 'react'
 import z from 'zod'
 
 const drinkDetailsSearchSchema = z.object({
@@ -86,15 +86,15 @@ function DrinkDetailRouteRoot() {
       <hr className={css({ borderColor: 'gray.300', marginY: '4' })} />
 
       {selectedRecipe && (
-        // <ViewTransition>
-        <Suspense fallback={<RecipeDetails.Skeleton />}>
-          <RecipeDetails
-            key={selectedRecipe.slug}
-            drinkSlug={drinkSlug}
-            recipeSlug={selectedRecipe?.slug}
-          />
-        </Suspense>
-        // </ViewTransition>
+        <ViewTransition>
+          <Suspense fallback={<RecipeDetails.Skeleton />}>
+            <RecipeDetails
+              key={selectedRecipe.slug}
+              drinkSlug={drinkSlug}
+              recipeSlug={selectedRecipe?.slug}
+            />
+          </Suspense>
+        </ViewTransition>
       )}
     </Layout>
   )

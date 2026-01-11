@@ -75,7 +75,7 @@ export function RecipeFormEdit(props: RecipeFormEditProps) {
 
         <form.AppField
           name="slug"
-          children={(field) => <field.TextField label="Slug" readonly />}
+          children={(field) => <field.TextField label="Slug" readOnly />}
         />
       </Fieldset>
 

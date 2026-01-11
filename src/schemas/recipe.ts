@@ -7,7 +7,7 @@ const name = z.string().trim().min(1, 'Måste ge receptet ett namn').max(255)
 const slug = slugFormat.trim().min(1).max(255)
 const instructions = z.string().trim().min(1, 'Måste fylla i instruktioner')
 const notes = z.string().trim().optional()
-const inspirationUrl = z.url().optional()
+const inspirationUrl = z.string().trim().optional()
 const ingredients = z
   .array(IngredientSchema)
   .min(1, 'Måste ange minst en ingrediens')

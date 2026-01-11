@@ -58,7 +58,11 @@ export function RecipeFormCreate(props: RecipeFormCreateProps) {
         <form.AppField
           name="name"
           children={(field) => (
-            <field.TextField label="Namn" placeholder='T ex "Favoriten"' />
+            <field.TextField
+              label="Namn"
+              placeholder='T ex "Favoriten"'
+              autoFocus
+            />
           )}
         />
 

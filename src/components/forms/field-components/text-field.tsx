@@ -5,7 +5,8 @@ import { useFieldContext } from '../app-form-context'
 import { FieldErrors } from './field-errors'
 
 interface TextFieldProps {
-  readonly?: boolean
+  autoFocus?: boolean
+  readOnly?: boolean
   id?: string
   label?: string
   placeholder?: string
@@ -34,7 +35,8 @@ export function TextField(props: TextFieldProps) {
         name={field.name}
         value={field.state.value ?? ''}
         placeholder={props.placeholder}
-        readOnly={props.readonly}
+        readOnly={props.readOnly}
+        autoFocus={props.autoFocus}
         className={cx(fieldStyles.control, input())}
         onBlur={field.handleBlur}
         onChange={(event) => field.handleChange(event.currentTarget.value)}
